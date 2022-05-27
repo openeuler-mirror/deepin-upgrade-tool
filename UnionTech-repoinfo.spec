@@ -7,7 +7,7 @@ URL:            http://gitlabxa.uniontech.com/
 Source0:        https://gitlabxa.uniontech.com/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python3-devel python3dist(setuptools)
-Requires:       python3 logrotate python3-PyQt5-base
+Requires:       python3 logrotate python3-PyQt5-base python3dist(psutil)
 %{?systemd_requires}
 Provides:       repoinfo
 
@@ -49,7 +49,11 @@ install -m644 service/98-repoinfo.preset  $RPM_BUILD_ROOT/%{_presetdir}/
 
 %preun
 %systemd_preun repoinfo.timer
-rm -f /var/infomation/msg.txt
+if [ -f "/var/infomation/msg.txt" ];then
+	rm -f /var/infomation/msg.txt
+fi
+
+
 
 %postun
 %systemd_postun_with_restart repoinfo.timer

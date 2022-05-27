@@ -60,6 +60,18 @@ QPushButton#update::hover
 	background-color: #0081FF;
 }
 
+QPushButton#update::pressed
+{
+	background-color: #0000FF;
+
+}
+
+QPushButton#update::disabled
+{
+	background-color: #C0C0C0;
+
+}
+
 QPushButton[name~='select_btn']
 {
     border-style:none;

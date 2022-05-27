@@ -63,7 +63,9 @@ def get_available_update_rpmpkgs():
 
 
 def get_available_update_rpmpkgs_number():
-    return len(get_available_update_rpmpkgs())
+    number = len(get_available_update_rpmpkgs())
+    print(number)
+    return number
 
 
 if __name__ == '__main__':

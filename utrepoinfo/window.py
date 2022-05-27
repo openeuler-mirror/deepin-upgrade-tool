@@ -13,6 +13,10 @@ from utrepoinfo.dnf import RpmType
 
 
 class Ui_rpm_update(QMainWindow):
+    sucess_code = 0
+    cancle_code = 126
+    wrong_password_code = 127
+
     def __init__(self):
         super().__init__()
         self.init_rpmdata()
@@ -136,13 +140,29 @@ class Ui_rpm_update(QMainWindow):
         cursor.insertText(str(self.process.readAll().data().decode()))
         self.output_console.ensureCursorVisible()
 
+    def disable_install_pkgs_ck(self):
+        for i in range(self.rpm_table_widget.rowCount()):
+            if self.rpmpkgs_select_status[i][0].isChecked():
+                self.rpmpkgs_select_status[i][0].setDisabled(True)
+
     def stop_install(self):
-        self.update.setEnabled(True)
         self.rpm_table_widget.setEnabled(True)
-        if self.process.exitCode() == 0:
+        if self.process.exitCode() == self.sucess_code:
+            self.disable_install_pkgs_ck()
             self.rpm_status.setText("Upgrade successed")
+        elif self.process.exitCode() == self.cancle_code:
+            self.rpm_status.setText("Cancel the right escalation")
+            # 更新失败，打开按钮
+            self.update.setEnabled(True)
+        elif self.process.exitCode() == self.wrong_password_code:
+            self.rpm_status.setText("Wrong privilege escalation password")
+            # 更新失败，打开按钮
+            self.update.setEnabled(True)
+        # TODO: 增加更多异常
         else:
             self.rpm_status.setText("Upgrade failed")
+            # 更新完，升级按钮保持disable
+            self.update.setEnabled(True)
         # TODO: 是否需要刷新cli的msg.txt
 
     def close_event(self):
@@ -276,9 +296,8 @@ class Ui_rpm_update(QMainWindow):
         for i in range(self.rpm_table_widget.rowCount()):
             if self.rpmpkgs_select_status[i][0].isChecked():
                 select_rpm_list.append(self.rpmpkgs_select_status[i][1])
-                self.rpmpkgs_select_status[i][0].setDisabled(True)
+                # self.rpmpkgs_select_status[i][0].setDisabled(True)
         self.output_console.clear()
-        # self.process.start("ping", ["baidu.com", "-c", "4"])
         self.process.start("pkexec", ["utrpminstall", "-l", " ".join(select_rpm_list)])
 
     def eventFilter(self, source, event):
@@ -337,12 +356,14 @@ class Ui_rpm_update(QMainWindow):
         self.output_console.append(rpminfo)
 
     def update_rpm_status(self):
-        # return
         select_count = 0
+        available_select_count = 0
         for i in range(self.rpm_table_widget.rowCount()):
             if self.rpmpkgs_select_status[i][0].isChecked():
                 select_count += 1
-        if select_count == 0:
+                if self.rpmpkgs_select_status[i][0].isEnabled():
+                    available_select_count += 1
+        if available_select_count == 0:
             self.update.setDisabled(True)
         else:
             self.update.setEnabled(True)
@@ -416,7 +437,7 @@ class Ui_rpm_update(QMainWindow):
 
     def retranslateUi(self, rpm_update):
         _translate = QCoreApplication.translate
-        rpm_update.setWindowTitle(_translate("rpm_update", "testReviewtitle"))
+        rpm_update.setWindowTitle(_translate("rpm_update", "rpm update window"))
         # self.cancle.setText(_translate("rpm_update", "cancle"))
         self.update.setText(_translate("rpm_update", "update"))
         self.rpm_status.setText(_translate("rpm_update", "0 update selected"))
