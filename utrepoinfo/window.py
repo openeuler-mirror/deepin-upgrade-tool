@@ -31,7 +31,7 @@ class Ui_rpm_update(QMainWindow):
         self.resize(640, 561)
         self.setCursor(QCursor(Qt.ArrowCursor))
         self.setMouseTracking(False)
-
+        self.setWindowIcon(QIcon(LOGO))
         # 左上角logo设置
         self.logo = QLabel(self)
         self.logo.setGeometry(15, 25, 80, 76)
@@ -504,6 +504,7 @@ def main():
     ex = Ui_rpm_update()
     # 设置窗口透明度，目前在dde上显示有异常
     ex.setWindowOpacity(0.5)
+    # ex.setWindowIcon(LOGO)
     ex.show()
     app.exec_()
 
