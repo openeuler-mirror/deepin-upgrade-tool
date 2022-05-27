@@ -6,6 +6,25 @@ from dnf.cli.format import format_number
 from dnf.cli.output import Output, CliTransactionDisplay
 
 
+class RpmType(object):
+    """返回rpm包类型列表"""
+    bug = "bugfix"
+    sec = "security"
+    enhanc = "enhancement"
+
+    @classmethod
+    def get_sec_pkgs_list(cls, query):
+        return list(query.filter(advisory_type__eq=cls.sec))
+
+    @classmethod
+    def get_bug_pkgs_list(cls, query):
+        return list(query.filter(advisory_type__eq=cls.bug))
+
+    @classmethod
+    def get_enhanc_pkgs_list(cls, query):
+        return list(query.filter(advisory_type__eq=cls.enhanc))
+
+
 class UtBase(dnf.Base):
     """This is the base class for ut."""
 
@@ -45,8 +64,11 @@ class UtBase(dnf.Base):
         # 获取可更新包的详细信息
         logging.debug("get update pkg's detail list")
         pkgs = self.get_available_update_pkgs()
+        pkgs_sec = RpmType.get_sec_pkgs_list(pkgs)
+        pkgs_bug = RpmType.get_bug_pkgs_list(pkgs)
+        pkgs_enhanc = RpmType.get_enhanc_pkgs_list(pkgs)
         pkgs_detail = []
-        for pkg in pkgs:
+        for pkg in list(pkgs):
             pkg_detail = {"name": pkg.name,
                           "release": pkg.release,
                           "version": pkg.version,
@@ -59,8 +81,17 @@ class UtBase(dnf.Base):
                           "url": pkg.url,
                           "license": pkg.license,
                           "desc": pkg.description,
-                          "changelogs": pkg.changelogs}
-            # <class 'dnf.package.Package'>
+                          "changelogs": pkg.changelogs,
+                          "type": []}
+            if pkg in pkgs_sec:
+                # 包类型添加安全
+                pkg_detail["type"].append(RpmType.sec)
+            if pkg in pkgs_bug:
+                # 包类型添加bugfix
+                pkg_detail["type"].append(RpmType.bug)
+            if pkg in pkgs_enhanc:
+                # 包类型添加性能提升
+                pkg_detail["type"].append(RpmType.enhanc)
             pkgs_detail.append(pkg_detail)
         return pkgs_detail
 
