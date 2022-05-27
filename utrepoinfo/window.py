@@ -3,8 +3,7 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, 
     QTableWidgetItem, QTableWidget, QDesktopWidget, QMainWindow, QAbstractItemView, QHBoxLayout, QStyle, \
     QStyleOptionButton
 from PyQt5.QtGui import QFont, QPixmap, QCursor
-from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal
-from utrepoinfo.dnf import UtBase
+from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal,QProcess
 from utrepoinfo.config import RPMPKGSDETAILS, RECOARDDIR
 from utrepoinfo.utils import read_jsonfile_to_pyobj
 
@@ -174,10 +173,19 @@ class Ui_rpm_update(QMainWindow):
         self.update.setObjectName("update")
         self.update.setProperty("name", 'btn')
         self.update.clicked.connect(self.update_rpmpkges)
+        # 安装rpm进程
+        self.process = QProcess(self)
+        self.process.readyRead.connect(self.output_display)
 
         self.setStyleSheet(qssStyle)
         self.retranslateUi(self)
         QMetaObject.connectSlotsByName(self)
+
+    def output_display(self):
+        cursor = self.output_console.textCursor()
+        cursor.movePosition(cursor.End)
+        cursor.insertText(str(self.process.readAll().data().decode()))
+        self.output_console.ensureCursorVisible()
 
     def set_rpm_table_widget_header(self):
         # 取消选中单元格的特效
@@ -258,8 +266,8 @@ class Ui_rpm_update(QMainWindow):
         for i in range(self.rpm_table_widget.rowCount()):
             if self.check_status[i][0].isChecked():
                 select_rpm_list.append(self.check_status[i][1])
-        with UtBase() as base:
-            base.update_rpmpkgs(select_rpm_list)
+        self.output_console.clear()
+        self.process.start("pkexec", ["utrpminstall"," ".join(select_rpm_list)])
 
     def eventFilter(self, source, event):
         if self.rpm_table_widget.selectedIndexes() != []:
