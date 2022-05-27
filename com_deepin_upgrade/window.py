@@ -242,6 +242,7 @@ class Ui_pkgs_upgrade(QMainWindow):
             return ','.join(type_i18n_list)
 
     def init_rpm_info(self, type=None):
+        # 定义所有widget的状态记录列表，单独定义此列表是为了方便解析操作
         self.rpmpkgs_select_status = []
         self.clean_rpm_info()
         for pkg_id in range(len(self.rpmpkgs)):
@@ -385,7 +386,9 @@ class Ui_pkgs_upgrade(QMainWindow):
 
         self.output_console.clear()
         try:
-            rpminfo = get_rpm_info(self.rpmpkgs[row])
+            # 增加安全筛选后，需要准确匹配到具体包
+            rpminfo = get_rpm_info(self.rpmpkgs[self.rpmpkgs_select_status[row][3]])
+
         except Exception as e:
             print(e)
         self.output_console.clear()
