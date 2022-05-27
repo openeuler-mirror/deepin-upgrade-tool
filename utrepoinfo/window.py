@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, 
     QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal, QProcess, QTimer
-from utrepoinfo.config import LOGOPNG
+from utrepoinfo.config import LOGO, TRAY_INTERVAL
 from utrepoinfo.utils import get_available_update_rpmpkgs
 from utrepoinfo.qss import qss_style
 from utrepoinfo.dnf import RpmType
@@ -36,7 +36,7 @@ class Ui_rpm_update(QMainWindow):
         self.logo = QLabel(self)
         self.logo.setGeometry(15, 25, 80, 76)
         self.logo.setObjectName("logo")
-        logo_pic = QPixmap(LOGOPNG)
+        logo_pic = QPixmap(LOGO)
         self.logo.setPixmap(logo_pic.scaled(80, 76, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
         # title 设置
@@ -352,7 +352,7 @@ class Ui_rpm_update(QMainWindow):
     def repo_tray(self):
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(
-            QIcon(LOGOPNG))
+            QIcon(LOGO))
 
         '''
             Define and add steps to work with the system tray icon
@@ -387,8 +387,7 @@ class Ui_rpm_update(QMainWindow):
             print(e)
         self.update_tray()
 
-    def tray_timer(self, interval=1000):
-        # interval 单位是ms
+    def tray_timer(self, interval=TRAY_INTERVAL):
         timer = QTimer(self)
 
         timer.timeout.connect(self.update_tray)

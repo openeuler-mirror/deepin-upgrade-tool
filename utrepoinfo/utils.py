@@ -2,7 +2,7 @@ import os
 import json
 import logging
 import datetime
-from utrepoinfo.config import RECOARDFILE, RPMPKGSDETAILS
+from utrepoinfo.config import REPO_CLI_MSG, REPO_DATA
 from utrepoinfo.rpm import get_local_rpmpkgs
 
 class ComplexEncoder(json.JSONEncoder):
@@ -38,7 +38,7 @@ def read_jsonfile_to_pyobj(file):
 
 
 def sigterm_handler(sig, frame):
-    del_file(RECOARDFILE)
+    del_file(REPO_CLI_MSG)
     exit()
 
 
@@ -48,7 +48,7 @@ def timeout_handler(sig, frame):
 
 def get_available_update_rpmpkgs():
     try:
-        rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
+        rpmpkgs = read_jsonfile_to_pyobj(REPO_DATA)
         local_rpms = get_local_rpmpkgs()
         for i in rpmpkgs[:]:
             if local_rpms[i["name"]] == "{version}-{release}".format(version=i["version"], release=i["release"]):
