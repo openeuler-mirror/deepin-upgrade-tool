@@ -64,18 +64,12 @@ class Ui_rpm_update(QMainWindow):
         # self.closebutton.clicked.connect(QApplication.instance().quit)
         self.closebutton.clicked.connect(self.close_event)
 
-        self.select_all = QPushButton(self)
-        self.select_all.setGeometry(QRect(10, 105, 120, 36))
+        self.select_all = QCheckBox(self)
+        self.select_all.setGeometry(QRect(30, 110, 99, 26))
         self.select_all.setObjectName("select_all")
-        self.select_all.setProperty("name", 'select_btn')
-        self.select_security = QPushButton(self)
-        self.select_security.setGeometry(QRect(130, 105, 120, 36))
+        self.select_security = QCheckBox(self)
+        self.select_security.setGeometry(QRect(150, 110, 141, 26))
         self.select_security.setObjectName("select_security")
-        self.select_security.setProperty("name", 'select_btn')
-        self.select_reset = QPushButton(self)
-        self.select_reset.setGeometry(QRect(250, 105, 120, 36))
-        self.select_reset.setObjectName("select_reset")
-        self.select_reset.setProperty("name", 'select_btn')
 
         self.rpm_table_widget = QTableWidget(self)
         # self.rpm_table_widget.setGeometry(QRect(10, 125, 620, 226))
@@ -164,12 +158,12 @@ class Ui_rpm_update(QMainWindow):
         # 设置表头显示方式
         self.rpm_table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         # 四列数据
-        self.rpm_table_widget.setColumnCount(4)
+        self.rpm_table_widget.setColumnCount(5)
         # 设置头
         # header_checkbox = CheckBoxHeader()
         # self.rpm_table_widget.setHorizontalHeader(header_checkbox)
         # self.rpm_table_widget.setHorizontalHeaderLabels(['Install', 'Software', 'Version', "Size"])
-        self.rpm_table_widget.setHorizontalHeaderLabels(['Install', 'Software', 'Version', "Size"])
+        self.rpm_table_widget.setHorizontalHeaderLabels(['Install', 'Software', 'Version', 'Type', 'Size'])
         # 设置表头显示方式
         self.rpm_table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         # header_checkbox.select_all_clicked.connect(self.select_all_action)
@@ -177,9 +171,10 @@ class Ui_rpm_update(QMainWindow):
         # 前三列固定宽度
         self.rpm_table_widget.setColumnWidth(0, 60)
         self.rpm_table_widget.setColumnWidth(1, 236)
-        self.rpm_table_widget.setColumnWidth(2, 220)
+        self.rpm_table_widget.setColumnWidth(2, 165)
+        self.rpm_table_widget.setColumnWidth(3, 60)
         # 最后一列自适应宽度
-        self.rpm_table_widget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
+        self.rpm_table_widget.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
 
     def init_rpm_info(self):
         self.check_status = []
@@ -187,7 +182,7 @@ class Ui_rpm_update(QMainWindow):
         for i in self.rpmpkgs:
             ck = self.add_rpm_item("{name}({arch})".format(name=i["name"], arch=i["arch"]),
                                    "{version}-{release}".format(version=i["version"], release=i["release"]),
-                                   i["downloadsize_human_readable"])
+                                   i["type"], i["downloadsize_human_readable"])
             self.check_status.append([ck, i["name"]])
 
     def clean_rpm_info(self):
@@ -208,7 +203,7 @@ class Ui_rpm_update(QMainWindow):
                 if i[0].isEnabled():
                     i[0].setCheckState(Qt.Unchecked)
 
-    def add_rpm_item(self, name, version, size):
+    def add_rpm_item(self, name, version, rpmpkgtype, size):
         row = self.rpm_table_widget.rowCount()
         self.rpm_table_widget.setRowCount(row + 1)
         ck = QCheckBox()
@@ -221,7 +216,8 @@ class Ui_rpm_update(QMainWindow):
         self.rpm_table_widget.setCellWidget(row, 0, w)
         self.rpm_table_widget.setItem(row, 1, QTableWidgetItem(name))
         self.rpm_table_widget.setItem(row, 2, QTableWidgetItem(version))
-        self.rpm_table_widget.setItem(row, 3, QTableWidgetItem(size))
+        self.rpm_table_widget.setItem(row, 3, QTableWidgetItem(rpmpkgtype))
+        self.rpm_table_widget.setItem(row, 4, QTableWidgetItem(size))
         return ck
 
     def update_rpmpkges(self):
@@ -370,7 +366,6 @@ class Ui_rpm_update(QMainWindow):
         self.closebutton.setToolTip(_translate("rpm_update", "close"))
         self.select_all.setText(_translate("rpm_update", "Select All"))
         self.select_security.setText(_translate("rpm_update", "Select security"))
-        self.select_reset.setText(_translate("rpm_update", "Reset select"))
 
     # 实现窗口拖动
     def mousePressEvent(self, event):
