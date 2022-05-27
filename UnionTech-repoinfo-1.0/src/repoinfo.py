@@ -60,7 +60,7 @@ def createlogfile():
         if re.search("uel20", line):
             num += 1
     logging.info('Connect repo server success')
-    msg="New package:"+str(num)
+    msg="Upgradable packages:"+str(num)
     myrecoard(msg)
     logging.info(msg)
 
