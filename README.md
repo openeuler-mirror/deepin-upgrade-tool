@@ -34,23 +34,18 @@ rpm -ivh com.deepin.upgrade-XXX-rpm
 dnf install com.deepin.upgrade-XXX-rpm
 ```
 
-## Getting help
-
-Any usage issues can ask for help via
-
-* [Gitter](https://gitter.im/orgs/linuxdeepin/rooms)
-* [IRC channel](https://webchat.freenode.net/?channels=deepin)
-* [Forum](https://bbs.deepin.org)
-* [WiKi](https://wiki.deepin.org/)
 
 ## Getting involved
 
 We encourage you to report issues and contribute changes
 
-* [Contribution guide for developers](https://github.com/linuxdeepin/developer-center/wiki/Contribution-Guidelines-for-Developers-en)
-  . (English)
-* [开发者代码贡献指南](https://github.com/linuxdeepin/developer-center/wiki/Contribution-Guidelines-for-Developers) (中文)
+* [Contribution guide for developers](https://www.openeuler.org/zh/community/contribution/) (English)
+* [开发者代码贡献指南](https://www.openeuler.org/en/community/contribution/) (中文)
+
+## Copyright
+
+Copyright (C) 2022 Uniontech Software Technology Co., Ltd.
 
 ## License
 
-[Project name] is licensed under [GPLv3](LICENSE).
+[com.deepin.upgrade] is licensed under [GPL-3.0-only](LICENSE).

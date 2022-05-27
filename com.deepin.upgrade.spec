@@ -3,9 +3,8 @@ Name:           com.deepin.upgrade
 Version:        1.1
 Release:        5
 Summary:        Deepin upgrade tool
-License:        GPLv3
-URL:            https://gitlabxa.uniontech.com/
-Source0:        https://gitlabxa.uniontech.com/%{name}-%{version}.tar.gz
+License:        GPL-3.0-only
+Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python3-devel python3dist(setuptools) desktop-file-utils gettext
 Requires:       python3 logrotate python3-PyQt5-base python3dist(psutil) dde-control-center
