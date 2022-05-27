@@ -176,7 +176,7 @@ class Ui_rpm_update(QMainWindow):
         # 安装rpm进程
         self.process = QProcess(self)
         self.process.readyRead.connect(self.output_display)
-
+        self.process.finished.connect(self.stop_install)
         self.setStyleSheet(qssStyle)
         self.retranslateUi(self)
         QMetaObject.connectSlotsByName(self)
@@ -186,6 +186,9 @@ class Ui_rpm_update(QMainWindow):
         cursor.movePosition(cursor.End)
         cursor.insertText(str(self.process.readAll().data().decode()))
         self.output_console.ensureCursorVisible()
+
+    def stop_install(self):
+        self.update.setEnabled(True)
 
     def set_rpm_table_widget_header(self):
         # 取消选中单元格的特效
@@ -262,12 +265,15 @@ class Ui_rpm_update(QMainWindow):
         return ck
 
     def update_rpmpkges(self):
+        self.update.setDisabled(True)
+        print("aaa")
         select_rpm_list = []
         for i in range(self.rpm_table_widget.rowCount()):
             if self.check_status[i][0].isChecked():
                 select_rpm_list.append(self.check_status[i][1])
         self.output_console.clear()
-        self.process.start("pkexec", ["utrpminstall"," ".join(select_rpm_list)])
+        self.process.start("pkexec", ["ping","baidu.com","-c","200"])
+        # self.process.start("pkexec", ["utrpminstall"," ".join(select_rpm_list)])
 
     def eventFilter(self, source, event):
         if self.rpm_table_widget.selectedIndexes() != []:
