@@ -23,9 +23,11 @@ install -d -m755 $RPM_BUILD_ROOT/%{_bindir}
 install -d -m755 $RPM_BUILD_ROOT/%{_sysconfdir}/skel/.config/autostart/
 install -d -m755 $RPM_BUILD_ROOT/root/.config/autostart/
 
-install -m644 %{name}-%{version}/scripts/repoinfo.desktop $RPM_BUILD_ROOT/%{_sysconfdir}/skel/.config/autostart/
-install -m644 %{name}-%{version}/scripts/repoinfo.desktop $RPM_BUILD_ROOT/root/.config/autostart/
-install -m644 %{name}-%{version}/service/repoinfo.service $RPM_BUILD_ROOT/%{_unitdir}/
+install -m644 %{name}-%{version}/scripts/repoinfo.desktop   $RPM_BUILD_ROOT/%{_sysconfdir}/skel/.config/autostart/
+install -m644 %{name}-%{version}/scripts/repoinfo.desktop   $RPM_BUILD_ROOT/root/.config/autostart/
+install -m644 %{name}-%{version}/service/repoinfo.service   $RPM_BUILD_ROOT/%{_unitdir}/
+install -m644 %{name}-%{version}/service/repoinfo.timer     $RPM_BUILD_ROOT/%{_unitdir}/
+
 install -m644 %{name}-%{version}/service/98-repoinfo.preset  $RPM_BUILD_ROOT/%{_presetdir}/
 install -m755 %{name}-%{version}/src/repoinfo.py $RPM_BUILD_ROOT/%{_bindir}/repoinfo
 install -m755 %{name}-%{version}/src/reponotify.py $RPM_BUILD_ROOT/%{_bindir}/reponotify
@@ -45,6 +47,7 @@ rm -f /run/infomation/msg.txt
 %attr(0755,root,root) %{_bindir}/reponotify
 
 %attr(0644,root,root) %{_unitdir}/repoinfo.service
+%attr(0644,root,root) %{_unitdir}/repoinfo.timer
 %attr(0644,root,root) %{_presetdir}/98-repoinfo.preset
 
 %attr(0644,root,root) %{_sysconfdir}/skel/.config/autostart/repoinfo.desktop
