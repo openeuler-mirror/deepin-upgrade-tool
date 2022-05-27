@@ -19,8 +19,8 @@ def Notify(msg):
         "org.freedesktop.Notifications.Notify",\
         "identifier",\
         "1",\
-        "", \
-        "Repo info",\
+        "/usr/share/repoinfo/notify.png", \
+        "",\
         msg,\
         "[]",\
         "{}",\

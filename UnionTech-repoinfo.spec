@@ -20,6 +20,8 @@ When the user logs in using the terminal available package information display
 install -d -m755 $RPM_BUILD_ROOT/%{_unitdir}
 install -d -m755 $RPM_BUILD_ROOT/%{_presetdir}
 install -d -m755 $RPM_BUILD_ROOT/%{_bindir}
+install -d -m755 $RPM_BUILD_ROOT/%{_datarootdir}/repoinfo
+
 install -d -m755 $RPM_BUILD_ROOT/%{_sysconfdir}/skel/.config/autostart/
 install -d -m755 $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/
 install -d -m755 $RPM_BUILD_ROOT/root/.config/autostart/
@@ -29,6 +31,7 @@ install -m644 %{name}-%{version}/scripts/repoinfo   	    $RPM_BUILD_ROOT/%{_sysc
 install -m644 %{name}-%{version}/scripts/repoinfo.desktop   $RPM_BUILD_ROOT/root/.config/autostart/
 install -m644 %{name}-%{version}/service/repoinfo.service   $RPM_BUILD_ROOT/%{_unitdir}/
 install -m644 %{name}-%{version}/service/repoinfo.timer     $RPM_BUILD_ROOT/%{_unitdir}/
+install -m644 %{name}-%{version}/img/notify.png             $RPM_BUILD_ROOT/%{_datarootdir}/repoinfo/
 
 install -m644 %{name}-%{version}/service/98-repoinfo.preset  $RPM_BUILD_ROOT/%{_presetdir}/
 install -m755 %{name}-%{version}/src/repoinfo.py $RPM_BUILD_ROOT/%{_bindir}/repoinfo
@@ -51,6 +54,7 @@ rm -f /run/infomation/msg.txt
 %attr(0644,root,root) %{_unitdir}/repoinfo.service
 %attr(0644,root,root) %{_unitdir}/repoinfo.timer
 %attr(0644,root,root) %{_presetdir}/98-repoinfo.preset
+%attr(0644,root,root) %{_datarootdir}/repoinfo/notify.png
 
 %attr(0644,root,root) %{_sysconfdir}/skel/.config/autostart/repoinfo.desktop
 %attr(0644,root,root) %{_sysconfdir}/logrotate.d/repoinfo
