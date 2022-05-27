@@ -5,10 +5,9 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, 
     QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal, QProcess, QTimer
-from utrepoinfo.config import RPMPKGSDETAILS, LOGOPNG
-from utrepoinfo.utils import read_jsonfile_to_pyobj
+from utrepoinfo.config import LOGOPNG
+from utrepoinfo.utils import get_available_update_rpmpkgs
 from utrepoinfo.qss import qss_style
-from utrepoinfo.rpm import get_local_rpmpkgs
 
 
 class Ui_rpm_update(QMainWindow):
@@ -18,16 +17,7 @@ class Ui_rpm_update(QMainWindow):
         self.initUI()
 
     def init_rpmdata(self):
-        try:
-            self.rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
-            local_rpms=get_local_rpmpkgs()
-            for i in self.rpmpkgs:
-                if local_rpms[i["name"]]=="{version}-{release}".format(version=i["version"],release=i["release"]):
-                    self.rpmpkgs.remove(i)
-        except Exception as e:
-            self.rpmpkgs = []
-            logging.error("Can't get rpmpkgs")
-            logging.error(e)
+        self.rpmpkgs = get_available_update_rpmpkgs()
 
     def initUI(self):
         # 移动到屏幕中心

@@ -1,5 +1,6 @@
 import argparse
 
+
 def main():
     parse = argparse.ArgumentParser()
     parse.add_argument("-l", "--pkgs", help="rpm pkg list")
@@ -7,5 +8,6 @@ def main():
     if args.pkgs:
         print(args.pkgs)
         print(type(args.pkgs))
+
 
 main()
