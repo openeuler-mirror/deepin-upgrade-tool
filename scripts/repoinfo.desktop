@@ -3,4 +3,5 @@ Type=Application
 Name=Reponotify
 Comment=repo infomation for desktop user
 Exec=/usr/bin/python3 /usr/bin/reponotify
+Icon = /usr/lib/python3.7/site-packages/utrepoinfo/img/notify.png
 Terminal=false

@@ -33,6 +33,7 @@ install -d -m755 $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/
 install -d -m755 $RPM_BUILD_ROOT/root/.config/autostart/
 
 install -m644 scripts/repoinfo.desktop   $RPM_BUILD_ROOT/%{_sysconfdir}/skel/.config/autostart/
+install -m644 scripts/repoinfo.desktop   $RPM_BUILD_ROOT/%{_datadir}/applications/
 install -m644 scripts/repoinfo              $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/
 install -m644 scripts/repoinfo.desktop   $RPM_BUILD_ROOT/root/.config/autostart/
 install -m644 service/repoinfo.service   $RPM_BUILD_ROOT/%{_unitdir}/
@@ -63,6 +64,7 @@ rm -f /var/infomation/msg.txt
 #attr(0644,root,root) {_datarootdir}/repoinfo/notify.png
 
 %attr(0644,root,root) %{_sysconfdir}/skel/.config/autostart/repoinfo.desktop
+%attr(0644,root,root) %{_datadir}/applications/repoinfo.desktop
 %attr(0644,root,root) %{_sysconfdir}/logrotate.d/repoinfo
 %attr(0644,root,root) /root/.config/autostart/repoinfo.desktop
 %{_bindir}/*
