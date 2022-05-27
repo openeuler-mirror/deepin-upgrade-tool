@@ -24,3 +24,6 @@ LOGO = "{datapath}/img/{pngname}".format(datapath=PKG_PATH, pngname="notify.png"
 TRAY_INTERVAL = 1000 * 60 * 60 * 6
 # 通知和窗口之前的通信信号
 CONNECT_SIGNAL = signal.SIGUSR1
+# 主窗口命令
+WINDOW_CMDLINE = ['/usr/bin/python3', '/usr/bin/utrpmupdatewindow']
+
