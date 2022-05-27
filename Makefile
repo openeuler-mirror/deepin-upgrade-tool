@@ -1,10 +1,15 @@
-.PHONY: translate
+PKGNAME = com_deepin_upgrade
+PREFIX = /usr
+DATADIR = ${PREFIX}/share
 
-all: translate
-PREFIX = /usr/share/locale/zh_CN/LC_MESSAGES
-translate:
-	mkdir -p $(PREFIX)
-	msgfmt -o $(PREFIX)/utreponoity.mo utrepoinfo/po/utreponoity.po
 
-clean:
-	true
+include po.mk
+
+all: po-all
+
+install:  all po-install
+
+clean: po-clean
+	@rm -fv *.mo
+
+
