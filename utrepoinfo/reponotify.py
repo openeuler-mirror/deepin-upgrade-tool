@@ -26,16 +26,16 @@ class RpmUpdateNotify(object):
         self.notification.set_timeout(1000000)
 
     def notify(self):
-        self.notification.add_action("Cancle", _("Cancle"), self.cancle_botton)
-        self.notification.add_action("Update", "Update", self.action_update)
+        self.notification.add_action("Cancle", _("Cancle"), self.cancle_button)
+        self.notification.add_action("Update", "Update", self.update_button)
         self.notification.show()
 
-    def action_update(self, notification, action, user_data=None):
+    def update_button(self, notification, action, user_data=None):
         print(action)
         main_window()
         Gtk.main_quit()
 
-    def cancle_botton(self, notification, action, user_data=None):
+    def cancle_button(self, notification, action, user_data=None):
         print(action)
         Gtk.main_quit()
 
