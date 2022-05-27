@@ -1,5 +1,6 @@
 import os
 import sys
+import signal
 
 # python 版本
 PY_VERSION_INFO = sys.version_info
@@ -21,3 +22,5 @@ PKG_PATH = "/usr/lib/python{pyversion}/site-packages/{name}/".format(pyversion=P
 LOGO = "{datapath}/img/{pngname}".format(datapath=PKG_PATH, pngname="notify.png")
 # 托盘区定时器刷新时间,单位ms，默认6h
 TRAY_INTERVAL = 1000 * 60 * 60 * 6
+# 通知和窗口之前的通信信号
+CONNECT_SIGNAL = signal.SIGUSR1
