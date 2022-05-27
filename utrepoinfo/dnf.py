@@ -115,22 +115,23 @@ class UtBase(dnf.Base):
         pkgs = self.get_available_update_pkgs()
         pkgs_detail = []
         for pkg in list(pkgs):
-            pkg_detail = {"name": pkg.name,
-                          "release": pkg.release,
-                          "version": pkg.version,
-                          "arch": pkg.arch,
-                          "downloadsize": pkg.downloadsize,
-                          "downloadsize_human_readable": format_number(pkg.downloadsize),
-                          "srpm": pkg.sourcerpm,
-                          "repo": pkg.reponame,
-                          "summary": pkg.summary,
-                          "url": pkg.url,
-                          "license": pkg.license,
-                          "desc": pkg.description,
-                          "changelogs": pkg.changelogs,
-                          "last_changelogs": self.get_latest_changelogs(pkg),
-                          "type": self.check_pkgs_update_type(pkg)}
-            pkgs_detail.append(pkg_detail)
+            if pkg.arch != "src":
+                pkg_detail = {"name": pkg.name,
+                              "release": pkg.release,
+                              "version": pkg.version,
+                              "arch": pkg.arch,
+                              "downloadsize": pkg.downloadsize,
+                              "downloadsize_human_readable": format_number(pkg.downloadsize),
+                              "srpm": pkg.sourcerpm,
+                              "repo": pkg.reponame,
+                              "summary": pkg.summary,
+                              "url": pkg.url,
+                              "license": pkg.license,
+                              "desc": pkg.description,
+                              "changelogs": pkg.changelogs,
+                              "last_changelogs": self.get_latest_changelogs(pkg),
+                              "type": self.check_pkgs_update_type(pkg)}
+                pkgs_detail.append(pkg_detail)
         return pkgs_detail
 
     def add_rpm_to_install_list(self, rpmpkgs):

@@ -34,7 +34,9 @@ class RpmUpdateNotify(object):
 
     def update_button(self, notification, action, user_data=None):
         print(action)
-        main_window()
+        import subprocess
+        subprocess.call('/usr/bin/utrpmupdatewindow')
+        # main_window()
         Gtk.main_quit()
 
     def cancle_button(self, notification, action, user_data=None):
