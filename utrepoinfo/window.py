@@ -5,13 +5,13 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, 
 from PyQt5.QtGui import QFont, QPixmap, QCursor
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal
 from utrepoinfo.dnf import UtBase
-from utrepoinfo.config import RPMPKGSDETAILS,RECOARDDIR
+from utrepoinfo.config import RPMPKGSDETAILS, RECOARDDIR
 from utrepoinfo.utils import read_jsonfile_to_pyobj
 
 try:
-    rpmpkgs=read_jsonfile_to_pyobj(RPMPKGSDETAILS)
+    rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
 except Exception as e:
-    rpmpkgs=[]
+    rpmpkgs = []
 qssStyle = '''
 QPushButton#close{
     border-style:none;
@@ -408,10 +408,15 @@ class CheckBoxHeader(QHeaderView):
         super(CheckBoxHeader, self).mousePressEvent(event)
 
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
+    # 使用fusion，规避dtk bug
     app.setStyle("fusion")
     ex = Ui_rpm_update()
     ex.setWindowOpacity(0.5)
     ex.show()
     app.exec_()
+
+
+if __name__ == "__main__":
+    main()
