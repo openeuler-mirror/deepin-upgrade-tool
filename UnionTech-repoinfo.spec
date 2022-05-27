@@ -71,8 +71,12 @@ rm -f /var/infomation/msg.txt
 %{python3_sitelib}/*
 
 %changelog
-#* Fri Aug 27 2021 heyitao <heyitao@uniontech.com> - 1.0-2
-#- modify the title of the notify tip
+* Thu Oct 21 2021 weidong <weidong@uniontech.com> - 2.0-1
+- Update 2.0
 
-#* Thu Jue 3 2021 heyitao <heyitao@uniontech.com> - 1.0-1
-#- display repo infomation
+* Fri Aug 27 2021 heyitao <heyitao@uniontech.com> - 1.0-2
+- modify the title of the notify tip
+
+* Thu Jue 3 2021 heyitao <heyitao@uniontech.com> - 1.0-1
+- display repo infomation
+
