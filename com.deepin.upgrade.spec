@@ -1,14 +1,14 @@
 %global         pypi_name  com_deepin_upgrade
 Name:           com.deepin.upgrade
 Version:        1.1
-Release:        2
+Release:        3
 Summary:        Deepin upgrade tool
 License:        GPLv3
 URL:            https://gitlabxa.uniontech.com/
 Source0:        https://gitlabxa.uniontech.com/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python3-devel python3dist(setuptools) desktop-file-utils gettext
-Requires:       python3 logrotate python3-PyQt5-base python3dist(psutil) dde
+Requires:       python3 logrotate python3-PyQt5-base python3dist(psutil) dde-control-center
 %{?systemd_requires}
 Provides:       UnionTech-repoinfo
 Obsoletes:      UnionTech-repoinfo <= 1.0
@@ -60,10 +60,16 @@ systemctl start pkgs-upgrade-info.timer >/dev/null 2>&1 || :
 %{_unitdir}/pkgs-upgrade-info.timer
 %{_datadir}/applications/pkgs_upgrade_notify.desktop
 %{_datadir}/applications/pkgs_upgrade_window.desktop
+%{_datadir}/polkit-1/actions/org.deepin.pkexec.deepin-upgrade.policy
 %{_sharedstatedir}/pkgs_upgrade
 
 
 %changelog
+* Mon Dec 13 2021 weidong <weidong@uniontech.com> - 1.1-3
+- Update installation dependencies
+- Update readme package name
+- Add pkexec reminder configuration
+
 * Mon Nov 22 2021 weidong <weidong@uniontech.com> - 1.1-2
 - Support internationalization
 - Optimize security selection window
