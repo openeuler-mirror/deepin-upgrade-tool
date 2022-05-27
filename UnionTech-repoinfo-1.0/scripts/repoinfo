@@ -1,0 +1,10 @@
+/var/log/repoinfomation.log
+{
+    weekly
+    rotate 10
+    notifempty
+    copytruncate
+    missingok
+    size +10240k
+}
+
