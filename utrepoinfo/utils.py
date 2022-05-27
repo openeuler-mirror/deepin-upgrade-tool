@@ -16,9 +16,14 @@ def write_file(file, content):
         f.write(content)
 
 
-def write_pyobj_file(file, obj):
+def write_pyobj_to_jsonfile(file, obj):
     with open(file, 'w') as f:
         json.dump(obj, f, indent=4)
+
+
+def read_jsonfile_to_pyobj(file):
+    with open(file, 'r') as f:
+        return json.load(f)
 
 
 def sigterm_handler(sig, frame):

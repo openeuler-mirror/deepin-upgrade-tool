@@ -5,7 +5,7 @@ import logging
 import signal
 from utrepoinfo.dnf import UtBase
 from utrepoinfo.config import LOGFILE, RECOARDDIR, RECOARDFILE, RPMPKGSDETAILS
-from utrepoinfo.utils import sigterm_handler, timeout_handler, write_file, write_pyobj_file
+from utrepoinfo.utils import sigterm_handler, timeout_handler, write_file, write_pyobj_to_jsonfile
 
 logging.basicConfig(filename=LOGFILE, level=logging.INFO)
 
@@ -32,7 +32,7 @@ def createlogfile(timeout=120):
             rpmpkgs_detail = base.get_available_update_pkgs_details()
         msg = "Upgradable packages:" + str(len(rpmpkgs_detail))
         write_repoinfo_path(RECOARDFILE, msg)
-        write_pyobj_file(RPMPKGSDETAILS, rpmpkgs_detail)
+        write_pyobj_to_jsonfile(RPMPKGSDETAILS, rpmpkgs_detail)
         logging.info(msg)
         # 关闭闹钟
         signal.alarm(0)

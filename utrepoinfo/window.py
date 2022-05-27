@@ -4,28 +4,14 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, 
     QStyleOptionButton
 from PyQt5.QtGui import QFont, QPixmap, QCursor
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal
+from utrepoinfo.dnf import UtBase
+from utrepoinfo.config import RPMPKGSDETAILS,RECOARDDIR
+from utrepoinfo.utils import read_jsonfile_to_pyobj
 
 try:
-    from dnf_utils import UtBase
-
-    rpmpkgs = UtBase().get_available_update_pkgs_details()
+    rpmpkgs=read_jsonfile_to_pyobj(RPMPKGSDETAILS)
 except Exception as e:
-    print(e)
-    rpmpkgs = [{'name': 'python-qt5-rpm-macros', 'release': '6.uel20', 'version': '5.11.3', 'arch': 'noarch',
-                'downloadsize': 12276, 'downloadsize_human_readable': '12 k',
-                'srpm': 'python-qt5-5.11.3-6.uel20.src.rpm', 'repo': 'aa', 'summary': 'RPM macros python-qt5',
-                'url': 'http://www.riverbankcomputing.com/software/pyqt/', 'license': 'GPLv3',
-                'desc': 'RPM macros python-qt5.'},
-               {'name': 'python3-qt5', 'release': '6.uel20', 'version': '5.11.3', 'arch': 'x86_64',
-                'downloadsize': 1104320, 'downloadsize_human_readable': '1.1 M',
-                'srpm': 'python-qt5-5.11.3-6.uel20.src.rpm', 'repo': 'aa', 'summary': 'Python 3 bindings for Qt5',
-                'url': 'http://www.riverbankcomputing.com/software/pyqt/', 'license': 'GPLv3',
-                'desc': 'Python 3 bindings for Qt5.'},
-               {'name': 'python3-qt5-base', 'release': '6.uel20', 'version': '5.11.3', 'arch': 'x86_64',
-                'downloadsize': 2731180, 'downloadsize_human_readable': '2.6 M',
-                'srpm': 'python-qt5-5.11.3-6.uel20.src.rpm', 'repo': 'aa', 'summary': 'Python 3 bindings for Qt5 base',
-                'url': 'http://www.riverbankcomputing.com/software/pyqt/', 'license': 'GPLv3',
-                'desc': 'Python 3 bindings for Qt5 base.'}]
+    rpmpkgs=[]
 qssStyle = '''
 QPushButton#close{
     border-style:none;
