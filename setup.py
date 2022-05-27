@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gitlabxa.uniontech.com/server/incubator/UnionTech-repoinfo",
-    packages=setuptools.find_packages(),
+    packages=["utrepoinfo"],
     # install_requires=[
     #     "PyQt5",
     # ],
