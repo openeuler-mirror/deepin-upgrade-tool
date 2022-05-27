@@ -37,7 +37,7 @@ class Ui_rpm_update(QMainWindow):
         self.logo.setGeometry(15, 25, 80, 76)
         self.logo.setObjectName("logo")
         logo_pic = QPixmap(LOGOPNG)
-        self.logo.setPixmap(logo_pic.scaled(80, 76))
+        self.logo.setPixmap(logo_pic.scaled(80, 76, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
         # title 设置
         self.title = QLabel(self)
@@ -295,6 +295,7 @@ class Ui_rpm_update(QMainWindow):
                 changelog['author'],
                 changelog['text'])
             return chlog_str
+
         def get_rpm_info(rpmpkg):
             output_list = []
             name = "{0:<12}: {1}".format("Name", rpmpkg["name"])
