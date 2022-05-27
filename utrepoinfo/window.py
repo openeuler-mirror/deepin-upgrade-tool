@@ -142,6 +142,7 @@ class Ui_rpm_update(QMainWindow):
             self.rpm_status.setText("Upgrade successed")
         else:
             self.rpm_status.setText("Upgrade failed")
+        # TODO: 是否需要刷新cli的msg.txt
 
     def close_event(self):
         if self.process.state() == 0:
