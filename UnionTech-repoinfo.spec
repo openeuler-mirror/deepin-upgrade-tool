@@ -29,6 +29,7 @@ install -d -m755 $RPM_BUILD_ROOT/%{_bindir}
 install -d -m755 $RPM_BUILD_ROOT/%{_datarootdir}/repoinfo
 
 install -d -m755 $RPM_BUILD_ROOT/%{_sysconfdir}/skel/.config/autostart/
+install -d -m755 $RPM_BUILD_ROOT/%{_datadir}/applications/
 install -d -m755 $RPM_BUILD_ROOT/%{_sysconfdir}/logrotate.d/
 install -d -m755 $RPM_BUILD_ROOT/root/.config/autostart/
 
