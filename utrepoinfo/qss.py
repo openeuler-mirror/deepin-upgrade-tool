@@ -60,6 +60,24 @@ QPushButton#update::hover
 	background-color: #0081FF;
 }
 
+QPushButton[name~='select_btn']
+{
+    border-style:none;
+    # width: 170px;
+    # height: 36px;
+    # background: rgba(0,0,0,0.08);
+    # border: 1px solid rgba(0,0,0,0.03);
+    # border-radius: 8px;
+    # box-shadow: 0px 4px 4px 0px rgba(0,145,255,0.30); 
+}
+
+QPushButton[name~='select_btn']::hover
+{
+	background-color: #E6E6E6;
+
+}
+
+
 QTextBrowser
 {
     background: rgba(255,255,255,0.50);
