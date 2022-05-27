@@ -7,7 +7,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Notify
 from gi.repository import Gtk
 from utrepoinfo.utils import read_jsonfile_to_pyobj
-from utrepoinfo.config import RPMPKGSDETAILS,LOGFILE
+from utrepoinfo.config import RPMPKGSDETAILS, LOGFILE
 from utrepoinfo.window import main as main_window
 
 locale_path = '/usr/share/locale'
@@ -35,7 +35,6 @@ class RpmUpdateNotify(object):
         main_window()
         Gtk.main_quit()
 
-
     def cancle_botton(self, notification, action, user_data=None):
         print(action)
         Gtk.main_quit()
@@ -44,7 +43,7 @@ class RpmUpdateNotify(object):
 if __name__ == "__main__":
     logging.basicConfig(filename=LOGFILE, level=logging.INFO)
     try:
-        rpmpkgs_num=len(read_jsonfile_to_pyobj(RPMPKGSDETAILS))
+        rpmpkgs_num = len(read_jsonfile_to_pyobj(RPMPKGSDETAILS))
         if rpmpkgs_num > 0:
             RpmUpdateNotify("There are {0} updates available".format(str(rpmpkgs_num))).notify()
             Gtk.main()
