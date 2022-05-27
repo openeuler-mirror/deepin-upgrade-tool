@@ -20,6 +20,10 @@ class UtBase(dnf.Base):
             self.conf.substitutions.update_from_etc('/')
             # 读取所有repo
             self.read_all_repos()
+            # 读取repo的详细信息
+            repos = self.repos
+            for repo in repos.iter_enabled():
+                repo.load_metadata_other = True
             # 设置打印窗口
             self.output = Output
             # 设置事务展示窗口
@@ -43,20 +47,20 @@ class UtBase(dnf.Base):
         pkgs = self.get_available_update_pkgs()
         pkgs_detail = []
         for pkg in pkgs:
-            pkg_detail = {}
+            pkg_detail = {"name": pkg.name,
+                          "release": pkg.release,
+                          "version": pkg.version,
+                          "arch": pkg.arch,
+                          "downloadsize": pkg.downloadsize,
+                          "downloadsize_human_readable": format_number(pkg.downloadsize),
+                          "srpm": pkg.sourcerpm,
+                          "repo": pkg.reponame,
+                          "summary": pkg.summary,
+                          "url": pkg.url,
+                          "license": pkg.license,
+                          "desc": pkg.description,
+                          "changelogs": pkg.changelogs}
             # <class 'dnf.package.Package'>
-            pkg_detail["name"] = pkg.name
-            pkg_detail["release"] = pkg.release
-            pkg_detail["version"] = pkg.version
-            pkg_detail["arch"] = pkg.arch
-            pkg_detail["downloadsize"] = pkg.downloadsize
-            pkg_detail["downloadsize_human_readable"] = format_number(pkg.downloadsize)
-            pkg_detail["srpm"] = pkg.sourcerpm
-            pkg_detail["repo"] = pkg.reponame
-            pkg_detail["summary"] = pkg.summary
-            pkg_detail["url"] = pkg.url
-            pkg_detail["license"] = pkg.license
-            pkg_detail["desc"] = pkg.description
             pkgs_detail.append(pkg_detail)
         return pkgs_detail
 
