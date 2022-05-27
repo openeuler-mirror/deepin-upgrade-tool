@@ -116,6 +116,10 @@ class Ui_rpm_update(QMainWindow):
     def stop_install(self):
         self.update.setEnabled(True)
         self.rpm_table_widget.setEnabled(True)
+        if self.process.exitCode() == 0:
+            self.rpm_status.setText("Upgrade successed")
+        else:
+            self.rpm_status.setText("Upgrade failed")
 
     def close_event(self):
         if self.process.state() == 0:
@@ -209,8 +213,10 @@ class Ui_rpm_update(QMainWindow):
         return ck
 
     def update_rpmpkges(self):
+        logging.info("Begin install rpmpkgs")
         self.update.setDisabled(True)
         self.rpm_table_widget.setDisabled(True)
+        self.rpm_status.setText("Start upgrade...")
         select_rpm_list = []
         for i in range(self.rpm_table_widget.rowCount()):
             if self.check_status[i][0].isChecked():
