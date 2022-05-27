@@ -39,7 +39,7 @@ def createlogfile(timeout=120):
     except RuntimeError as e:
         logging.info('get rpminfo timeout')
         logging.info(e)
-        write_repoinfo_path(RECOARDFILE,"")
+        write_repoinfo_path(RECOARDFILE, "")
         return
     except Exception as e:
         write_repoinfo_path(RECOARDFILE, "")

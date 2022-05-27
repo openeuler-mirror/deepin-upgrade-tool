@@ -1,40 +1,44 @@
 import sys
+import logging
 from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, QPushButton, QLabel, QWidget, \
     QTableWidgetItem, QTableWidget, QDesktopWidget, QMainWindow, QAbstractItemView, QHBoxLayout, QStyle, \
-    QStyleOptionButton
-from PyQt5.QtGui import QFont, QPixmap, QCursor
-from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal,QProcess
+    QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox
+from PyQt5.QtGui import QFont, QPixmap, QCursor, QIcon
+from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal, QProcess, QTimer
 from utrepoinfo.config import RPMPKGSDETAILS, RECOARDDIR
 from utrepoinfo.utils import read_jsonfile_to_pyobj
 
-try:
-    rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
-except Exception as e:
-    rpmpkgs = []
 qssStyle = '''
-QPushButton#close{
+QPushButton#close
+{
     border-style:none;
     background-image: url(img/window_close_normal_light.png);
     background-position:center;
     background-repeat:no-repeat;
 }
+
 QPushButton#close::hover
 {
 	background-color: #E6E6E6;
 
 }
-QPushButton#hide{
+
+QPushButton#hide
+{
     border-style:none;
     background-image: url(img/window_min_normal_light.png);
     background-position:center;
     background-repeat:no-repeat;
 }
+
 QPushButton#hide::hover
 {
 	background-color: #E6E6E6;
 
 }
-QPushButton[name~='btn']{
+
+QPushButton[name~='btn']
+{
     width: 170px;
     height: 36px;
     background: rgba(0,0,0,0.08);
@@ -42,26 +46,45 @@ QPushButton[name~='btn']{
     border-radius: 8px;
     box-shadow: 0px 4px 4px 0px rgba(0,145,255,0.30); 
 }
+
+QPushButton#cancle
+{
+	background-color: #E6E6E6;
+}
+
+QPushButton#cancle::hover
+{
+	background-color: #C0C0C0;
+}
+
 QPushButton#update
 {
 	background-color: #0091FF;
 	color: #FFFFFF;
 }
 
+QPushButton#update::hover
+{
+	background-color: #0081FF;
+}
 
-QTextBrowser{
+QTextBrowser
+{
     background: rgba(255,255,255,0.50);
     border: 1px solid rgba(0,0,0,0.10);
     border-radius: 8px;
     font-size: 12px;
     font-family: Noto Mono;
 }
-QTableWidget{
+
+QTableWidget
+{
     background: #ffffff;
     border: 1px solid rgba(0,0,0,0.10);
     border-radius: 8px;
     alternate-background-color: rgb(244,244,244);text-align:right;
 }
+
 QHeaderView::section
 {
     border-width:6;
@@ -96,6 +119,12 @@ QCheckBox::indicator:checked:disabled{
 class Ui_rpm_update(QMainWindow):
     def __init__(self):
         super().__init__()
+        try:
+            self.rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
+        except Exception as e:
+            self.rpmpkgs = []
+            logging.error("Can't get rpmpkgs")
+            logging.error(e)
         self.initUI()
 
     def initUI(self):
@@ -140,7 +169,8 @@ class Ui_rpm_update(QMainWindow):
         self.closebutton = QPushButton(self)
         self.closebutton.setGeometry(QRect(592, 0, 50, 50))
         self.closebutton.setObjectName("close")
-        self.closebutton.clicked.connect(QApplication.instance().quit)
+        # self.closebutton.clicked.connect(QApplication.instance().quit)
+        self.closebutton.clicked.connect(self.close_event)
 
         self.rpm_table_widget = QTableWidget(self)
         self.rpm_table_widget.setGeometry(QRect(10, 125, 620, 226))
@@ -162,14 +192,14 @@ class Ui_rpm_update(QMainWindow):
         self.rpm_status.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
         self.rpm_status.setObjectName("rpm_status")
 
-        self.cancle = QPushButton(self)
-        self.cancle.setGeometry(QRect(140, 512, 170, 36))
-        self.cancle.setObjectName("cancle")
-        self.cancle.setProperty("name", 'btn')
-        self.cancle.clicked.connect(self.clean_rpm)
+        # self.cancle = QPushButton(self)
+        # self.cancle.setGeometry(QRect(140, 512, 170, 36))
+        # self.cancle.setObjectName("cancle")
+        # self.cancle.setProperty("name", 'btn')
+        # self.cancle.clicked.connect(self.cancle_process)
 
         self.update = QPushButton(self)
-        self.update.setGeometry(QRect(330, 512, 170, 36))
+        self.update.setGeometry(QRect(220, 512, 200, 36))
         self.update.setObjectName("update")
         self.update.setProperty("name", 'btn')
         self.update.clicked.connect(self.update_rpmpkges)
@@ -177,6 +207,8 @@ class Ui_rpm_update(QMainWindow):
         self.process = QProcess(self)
         self.process.readyRead.connect(self.output_display)
         self.process.finished.connect(self.stop_install)
+        # Init QSystemTrayIcon
+        self.repo_tray()
         self.setStyleSheet(qssStyle)
         self.retranslateUi(self)
         QMetaObject.connectSlotsByName(self)
@@ -189,6 +221,14 @@ class Ui_rpm_update(QMainWindow):
 
     def stop_install(self):
         self.update.setEnabled(True)
+        self.rpm_table_widget.setEnabled(True)
+
+    def close_event(self):
+        if self.process.state() == 0:
+            QApplication.instance().quit()
+        else:
+            QMessageBox.about(self, "Warning",
+                              "During the upgrade process, it is forbidden to exit the program")
 
     def set_rpm_table_widget_header(self):
         # 取消选中单元格的特效
@@ -226,14 +266,14 @@ class Ui_rpm_update(QMainWindow):
 
         # 前三列固定宽度
         self.rpm_table_widget.setColumnWidth(0, 60)
-        self.rpm_table_widget.setColumnWidth(1, 196)
-        self.rpm_table_widget.setColumnWidth(2, 260)
+        self.rpm_table_widget.setColumnWidth(1, 236)
+        self.rpm_table_widget.setColumnWidth(2, 220)
         # 最后一列自适应宽度
         self.rpm_table_widget.horizontalHeader().setSectionResizeMode(3, QHeaderView.Stretch)
 
     def init_rpm_info(self):
         self.check_status = []
-        for i in rpmpkgs:
+        for i in self.rpmpkgs:
             ck = self.add_rpm_item("{name}({arch})".format(name=i["name"], arch=i["arch"]),
                                    "{version}-{release}".format(version=i["version"], release=i["release"]),
                                    i["downloadsize_human_readable"])
@@ -241,12 +281,17 @@ class Ui_rpm_update(QMainWindow):
 
     def select_all_action(self, event):
         if event:
-            # 将所有的复选框都设为勾选状态
+            # 将所有checkbox设置未是
             for i in self.check_status:
-                i[0].setCheckState(Qt.Checked)
+                # 只修改可编辑按钮的状态
+                if i[0].isEnabled():
+                    i[0].setCheckState(Qt.Checked)
         else:
+            # 将所有的checkbox 设置否
             for i in self.check_status:
-                i[0].setCheckState(Qt.Unchecked)
+                # 只修改可编辑按钮的状态
+                if i[0].isEnabled():
+                    i[0].setCheckState(Qt.Unchecked)
 
     def add_rpm_item(self, name, version, size):
         row = self.rpm_table_widget.rowCount()
@@ -266,13 +311,14 @@ class Ui_rpm_update(QMainWindow):
 
     def update_rpmpkges(self):
         self.update.setDisabled(True)
-        print("aaa")
+        self.rpm_table_widget.setDisabled(True)
         select_rpm_list = []
         for i in range(self.rpm_table_widget.rowCount()):
             if self.check_status[i][0].isChecked():
                 select_rpm_list.append(self.check_status[i][1])
+                self.check_status[i][0].setDisabled(True)
         self.output_console.clear()
-        self.process.start("pkexec", ["ping","baidu.com","-c","200"])
+        self.process.start("ping", ["baidu.com", "-c", "4"])
         # self.process.start("pkexec", ["utrpminstall"," ".join(select_rpm_list)])
 
     def eventFilter(self, source, event):
@@ -312,7 +358,7 @@ class Ui_rpm_update(QMainWindow):
 
         self.output_console.clear()
         try:
-            rpminfo = get_rpm_info(rpmpkgs[row])
+            rpminfo = get_rpm_info(self.rpmpkgs[row])
         except Exception as e:
             print(e)
         self.output_console.clear()
@@ -328,9 +374,66 @@ class Ui_rpm_update(QMainWindow):
         self.rpm_status.setText("{0} updates selected".format(str(select_count)))
 
     # 清空rpm信息展示列表
-    def clean_rpm(self):
-        self.rpm_table_widget.clearContents()
-        self.rpm_table_widget.setRowCount(0)
+    def cancle_process(self):
+        self.process.kill()
+        # self.rpm_table_widget.clearContents()
+        # self.rpm_table_widget.setRowCount(0)
+
+    def repo_tray(self):
+        self.tray_icon = QSystemTrayIcon(self)
+        self.tray_icon.setIcon(
+            QIcon("/home/weidong/Desktop/repo/UnionTech-repoinfo/UnionTech-repoinfo-1.0/img/notify.png"))
+
+        '''
+            Define and add steps to work with the system tray icon
+            show - show window
+            hide - hide window
+            exit - exit from application
+        '''
+        show_action = QAction("Show", self)
+        quit_action = QAction("Exit", self)
+        hide_action = QAction("Hide", self)
+        reload_action = QAction("Reload", self)
+        show_action.triggered.connect(self.hide)
+        show_action.triggered.connect(self.show)
+        hide_action.triggered.connect(self.hide)
+        quit_action.triggered.connect(self.close_event)
+        reload_action.triggered.connect(self.reload)
+        tray_menu = QMenu()
+        tray_menu.addAction(show_action)
+        tray_menu.addAction(hide_action)
+        # tray_menu.addAction(reload_action)
+        tray_menu.addAction(quit_action)
+        self.tray_icon.setContextMenu(tray_menu)
+        self.tray_icon.setToolTip("There are {} updates available".format(str(len(self.rpmpkgs))))
+        self.tray_icon.activated.connect(self.show)
+        self.tray_icon.show()
+        self.tray_timer()
+
+    def reload(self):
+        try:
+            pass
+        except Exception as e:
+            print(e)
+        self.update_tray()
+
+    def tray_timer(self, interval=1000):
+        # interval 单位是ms
+        timer = QTimer(self)
+
+        timer.timeout.connect(self.update_tray)
+        timer.start(interval)
+
+    def update_tray(self):
+        if self.isHidden():
+            try:
+                self.rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
+            except Exception as e:
+                self.rpmpkgs = []
+                logging.error("Can't get rpmpkgs")
+                logging.error(e)
+            self.tray_icon.setToolTip("There are {} updates available".format(str(len(self.rpmpkgs))))
+            self.init_rpm_info()
 
     # 移动到屏幕中心
     def center(self):
@@ -345,7 +448,7 @@ class Ui_rpm_update(QMainWindow):
     def retranslateUi(self, rpm_update):
         _translate = QCoreApplication.translate
         rpm_update.setWindowTitle(_translate("rpm_update", "testReviewtitle"))
-        self.cancle.setText(_translate("rpm_update", "cancle"))
+        # self.cancle.setText(_translate("rpm_update", "cancle"))
         self.update.setText(_translate("rpm_update", "update"))
         self.rpm_status.setText(_translate("rpm_update", "0 update selected"))
         self.title.setText(_translate("rpm_update", "There are some updates available"))
@@ -427,6 +530,7 @@ def main():
     # 使用fusion，规避dtk bug
     app.setStyle("fusion")
     ex = Ui_rpm_update()
+    # 设置窗口透明度，目前在dde上显示有异常
     ex.setWindowOpacity(0.5)
     ex.show()
     app.exec_()
