@@ -1,16 +1,15 @@
-Name:     UnionTech-repoinfo
-Version:  2.0
-Release:  1
-Summary:  Available package information display
-License:  GPL
-URL:      http://gitlabxa.uniontech.com/
-Source0:  https://gitlabxa.uniontech.com/%{name}-%{version}.tar.gz
+Name:           UnionTech-repoinfo
+Version:        2.0
+Release:        1
+Summary:        Available package information display
+License:        GPL
+URL:            http://gitlabxa.uniontech.com/
+Source0:        https://gitlabxa.uniontech.com/%{name}-%{version}.tar.gz
 BuildArch:      noarch
-BuildRequires:  python3-devel
-BuildRequires:  python3dist(setuptools)
-Requires: python3 logrotate
+BuildRequires:  python3-devel python3dist(setuptools)
+Requires:       python3 logrotate python3-PyQt5-base
 %{?systemd_requires}
-Provides: repoinfo
+Provides:       repoinfo
 
 %description
 When the user logs in using the terminal available package information display
