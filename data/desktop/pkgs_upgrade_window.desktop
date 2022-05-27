@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Pkgs Upgrade Tool
+Name[zh_CN]=软件更新工具
+Comment=Packages upgrade tool
+Comment[zh_CN]=软件更新工具
+Exec=pkgs_upgrade_window
+Icon=/var/lib/pkgs_upgrade/icon/window_notify.png
+Terminal=false

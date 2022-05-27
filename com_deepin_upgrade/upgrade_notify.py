@@ -17,7 +17,7 @@ locale_path = LOCALE_PATH
 gettext.bindtextdomain(I18N_DOMAIN, locale_path)
 gettext.textdomain(I18N_DOMAIN)
 _ = gettext.gettext
-notify_count = 0
+unlock = 0
 
 
 class RpmUpdateNotify(object):
@@ -103,20 +103,10 @@ def get_user_cmd_pid(uid, cmdline=None):
     return None
 
 
-def update_notify(*args):
+def update_notify():
     """
     update notifaction
-    Args:
-        *args:
-
-    Returns:
-
     """
-    # 规避dde dbus bug 临时方案
-    global notify_count
-    notify_count += 1
-    if notify_count % 2 != 1:
-        return
     # 获取当前用户的id
     uid = os.getuid()
     logging.debug("uid is :{}".format(uid))
@@ -136,6 +126,11 @@ def update_notify(*args):
         # 如果当前桌面没有驻留进程，则发带按钮的通知
         else:
             RpmUpdateNotify(msg).notify_action()
+
+
+def unlock_window(sender, status, data):
+    if status['Locked'] == unlock:
+        update_notify()
 
 
 def lock_window(*args):
@@ -160,10 +155,10 @@ def main():
     DBusGMainLoop(set_as_default=True)
     system_bus = dbus.SessionBus()
     system_bus.add_signal_receiver(  # define the signal to listen to
-        update_notify,  # callback function
-        signal_name='Visible',
-        dbus_interface='com.deepin.dde.lockFront',
-        bus_name='com.deepin.dde.lockFront'  # system_bus name
+        unlock_window,  # callback function
+        signal_name='PropertiesChanged',
+        dbus_interface='org.freedesktop.DBus.Properties',
+        bus_name='com.deepin.SessionManager'  # system_bus name
     )
     mainloop = gi.repository.GLib.MainLoop()
     mainloop.run()

@@ -1,7 +1,7 @@
 %global         pypi_name  com_deepin_upgrade
 Name:           com.deepin.upgrade
 Version:        1.1
-Release:        4
+Release:        5
 Summary:        Deepin upgrade tool
 License:        GPLv3
 URL:            https://gitlabxa.uniontech.com/
@@ -58,12 +58,16 @@ systemctl start pkgs-upgrade-info.timer >/dev/null 2>&1 || :
 %{_presetdir}/98-pkgs-upgrade-info.preset
 %{_unitdir}/pkgs-upgrade-info.service
 %{_unitdir}/pkgs-upgrade-info.timer
-%{_datadir}/applications/pkgs_upgrade_notify.desktop
+%{_datadir}/applications/pkgs_upgrade_window.desktop
 %{_datadir}/polkit-1/actions/org.deepin.pkexec.deepin-upgrade.policy
 %{_sharedstatedir}/pkgs_upgrade
 
 
 %changelog
+* Wed Jan 05 2022 weidong <weidong@uniontech.com> - 1.1-5
+- Delete reminder desktop
+- Optimize DBUS judgment
+
 * Tue Dec 28 2021 weidong <weidong@uniontech.com> - 1.1-4
 - Bugfix bug-view-109558 bug-view-109559
 

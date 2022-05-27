@@ -59,7 +59,7 @@ setuptools.setup(
     },
     data_files=[
         (logrotate_path, glob.glob("data/logrotate/*")),
-        (desktop_path, glob.glob("data/desktop/*")),
+        (desktop_path, ["data/desktop/pkgs_upgrade_window.desktop"]),
         (autostart_root, ["data/desktop/pkgs_upgrade_notify.desktop"]),
         (autostart_all, ["data/desktop/pkgs_upgrade_notify.desktop"]),
         (f"{system_path}/system-preset", ["data/service/98-pkgs-upgrade-info.preset"]),
