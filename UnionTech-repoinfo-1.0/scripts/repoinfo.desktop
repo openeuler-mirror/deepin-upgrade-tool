@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Reponotify
-Comment=repo infomation for desktop user
-Exec=/usr/bin/python3 /usr/bin/reponotify
-Terminal=false
