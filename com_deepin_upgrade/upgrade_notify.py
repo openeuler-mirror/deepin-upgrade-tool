@@ -17,6 +17,7 @@ locale_path = LOCALE_PATH
 gettext.bindtextdomain(I18N_DOMAIN, locale_path)
 gettext.textdomain(I18N_DOMAIN)
 _ = gettext.gettext
+notify_count = 0
 
 
 class RpmUpdateNotify(object):
@@ -111,6 +112,11 @@ def update_notify(*args):
     Returns:
 
     """
+    # 规避dde dbus bug 临时方案
+    global notify_count
+    notify_count += 1
+    if notify_count % 2 != 1:
+        return
     # 获取当前用户的id
     uid = os.getuid()
     logging.debug("uid is :{}".format(uid))
@@ -152,12 +158,12 @@ def main():
     update_notify()
     logging.debug('Start to enter the daemon and listen for the login of the current session')
     DBusGMainLoop(set_as_default=True)
-    system_bus = dbus.SystemBus()
+    system_bus = dbus.SessionBus()
     system_bus.add_signal_receiver(  # define the signal to listen to
         update_notify,  # callback function
-        signal_name='Unlock',
-        dbus_interface='org.freedesktop.login1.Session',
-        bus_name='org.freedesktop.login1'  # system_bus name
+        signal_name='Visible',
+        dbus_interface='com.deepin.dde.lockFront',
+        bus_name='com.deepin.dde.lockFront'  # system_bus name
     )
     mainloop = gi.repository.GLib.MainLoop()
     mainloop.run()
