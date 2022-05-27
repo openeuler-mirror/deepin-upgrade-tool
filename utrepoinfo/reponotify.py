@@ -15,14 +15,10 @@ from utrepoinfo.utils import get_available_update_rpmpkgs
 from utrepoinfo.config import CONNECT_SIGNAL, LOGO, LOG_FILE, WINDOW_CMDLINE
 from threading import Thread
 
-# WINDOW_CMDLINE = ['/usr/bin/python3', '/usr/bin/utrpmupdatewindow']
 locale_path = '/usr/share/locale'
 gettext.bindtextdomain('utrepoinfo', locale_path)
 gettext.textdomain('utrepoinfo')
 _ = gettext.gettext
-
-
-# logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
 
 
 class RpmUpdateNotify(object):
@@ -32,8 +28,8 @@ class RpmUpdateNotify(object):
             content:str
         """
         # 初始化通知信息
-        Notify.init("Software Updates Available")
-        self.notification = Notify.Notification.new("Software Updates Available", content,
+        Notify.init(_("Software Updates Available"))
+        self.notification = Notify.Notification.new(_("Software Updates Available"), content,
                                                     LOGO)
         self.notification.set_urgency(Notify.Urgency.NORMAL)
         self.notification.set_urgency(2)
@@ -43,19 +39,18 @@ class RpmUpdateNotify(object):
     def notify_action(self):
         # 带有动作的通知
         self.notification.add_action("Cancle", _("Cancle"), self.cancle_button)
-        self.notification.add_action("Update", _("Update"), self.update_button)
+        self.notification.add_action("Details", _("Details"), self.detail_button)
         self.notify()
 
     def notify(self):
         # 不带动作的通知
         self.notification.show()
 
-    def update_button(self, notification, action, user_data=None):
-        # 更新按钮
+    def detail_button(self, notification, action, user_data=None):
+        # 详细信息按钮
         logging.debug(action)
         t = Thread(target=subprocess.call, args=(WINDOW_CMDLINE,))
         t.start()
-        # subprocess.Popen(WINDOW_CMDLINE)
 
     def cancle_button(self, notification, action, user_data=None):
         # 取消按钮
@@ -108,12 +103,14 @@ def update_notify(*args):
     logging.debug("The number of RPM packages is: {}".format(rpmpkgs_num))
     # 当存在可更新的rpm包时通知
     if rpmpkgs_num > 0:
+        msg = gettext.ngettext("There is {0} update available".format(str(rpmpkgs_num)),
+                               "There are {0} updates available".format(str(rpmpkgs_num)), rpmpkgs_num)
         # 如果存在同一会话下的桌面进程，则发的通知不带按钮
         if pid is not None:
-            RpmUpdateNotify("There are {0} updates available".format(str(rpmpkgs_num))).notify()
+            RpmUpdateNotify(msg).notify()
         # 如果当前桌面没有驻留进程，则发带按钮的通知
         else:
-            RpmUpdateNotify("There are {0} updates available".format(str(rpmpkgs_num))).notify_action()
+            RpmUpdateNotify(msg).notify_action()
 
 
 def lock_window(*args):

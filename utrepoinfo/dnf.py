@@ -138,7 +138,7 @@ class UtBase(dnf.Base):
         # 添加软件包列表到安装列表中
         logging.debug("add rpms to install_list")
         for pkg in self.get_available_update_pkgs():
-            if pkg.name in rpmpkgs:
+            if pkg.name in rpmpkgs and pkg.arch != "src":
                 self.package_install(pkg)
 
     def print_trans_info(self):
@@ -162,6 +162,7 @@ class UtBase(dnf.Base):
         except Exception as e:
             print("Install error")
             print(e)
+            exit(1)
 
 
 def install():
