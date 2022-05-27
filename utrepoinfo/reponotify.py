@@ -40,7 +40,7 @@ class RpmUpdateNotify(object):
         Gtk.main_quit()
 
 
-if __name__ == "__main__":
+def main():
     logging.basicConfig(filename=LOGFILE, level=logging.INFO)
     try:
         rpmpkgs_num = len(read_jsonfile_to_pyobj(RPMPKGSDETAILS))
@@ -49,3 +49,7 @@ if __name__ == "__main__":
             Gtk.main()
     except Exception as e:
         logging.error(e)
+
+
+if __name__ == '__main__':
+    main()
