@@ -10,7 +10,7 @@ import logging
 import signal
 
 LOGFILE = "/var/log/repoinfomation.log"
-RECOARDFILE = "/run/infomation/msg.txt"
+RECOARDFILE = "/var/infomation/msg.txt"
 
 def handler(sig, frame):
     delfile(RECOARDFILE)
@@ -21,9 +21,9 @@ signal.signal(signal.SIGTERM, handler)
 
 def myrecoard(content):
     try:
-        os.stat("/run/infomation/")
+        os.stat("/var/infomation/")
     except:
-        os.mkdir("/run/infomation/")
+        os.mkdir("/var/infomation/")
 
     with open(RECOARDFILE, "w+") as f:
         read_data = f.read()

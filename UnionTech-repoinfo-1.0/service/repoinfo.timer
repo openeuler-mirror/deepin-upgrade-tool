@@ -2,7 +2,8 @@
 Description=repoinfo timer
 
 [Timer]
-OnCalendar=*-*-* 00:59:00
+OnBootSec=10min
+OnUnitInactiveSec=24h
 Unit=repoinfo.service
 
 [Install]
