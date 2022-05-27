@@ -66,7 +66,7 @@ QTextBrowser
     border: 1px solid rgba(0,0,0,0.10);
     border-radius: 8px;
     font-size: 12px;
-    font-family: Noto Mono;
+    font-family: Droid Sans Mono;
 }
 
 QTableWidget
