@@ -1,5 +1,8 @@
 import logging
+import datetime
 import argparse
+import re
+import rpm
 import dnf
 import dnf.cli.progress
 from dnf.cli.format import format_number
@@ -58,15 +61,58 @@ class UtBase(dnf.Base):
     def get_available_update_pkgs(self):
         # 获取可更新的软件包
         logging.debug("get update pkg's list")
-        return self.query.available().upgrades()
+        self.available_update_pkgs = self.query.available().upgrades()
+        return self.available_update_pkgs
+
+    def get_latest_changelogs(self, package):
+        """Return list of changelogs for package newer then installed version"""
+        newest = None
+        for mi in self._rpmconn.readonly_ts.dbMatch('name', package.name):
+            changelogtimes = mi[rpm.RPMTAG_CHANGELOGTIME]
+            if changelogtimes:
+                newest = datetime.date.fromtimestamp(changelogtimes[0])
+                break
+        chlogs = [chlog for chlog in package.changelogs
+                  if newest is None or chlog['timestamp'] > newest]
+        return chlogs
+
+    def check_pkgs_update_type(self, package):
+        pkg_type = []
+        # 使用dnf自带接口判断软件包类型
+        pkgs_sec = RpmType.get_sec_pkgs_list(self.available_update_pkgs)
+        pkgs_bug = RpmType.get_bug_pkgs_list(self.available_update_pkgs)
+        pkgs_enhanc = RpmType.get_enhanc_pkgs_list(self.available_update_pkgs)
+        if package in pkgs_sec:
+            # 包类型添加安全
+            pkg_type.append(RpmType.sec)
+        if package in pkgs_bug:
+            # 包类型添加bugfix
+            pkg_type.append(RpmType.bug)
+        if package in pkgs_enhanc:
+            # 包类型添加性能提升
+            pkg_type.append(RpmType.enhanc)
+
+        # 解析 changelog 判断软件包更新类型
+        cve_regex = re.compile(r"cve-\d{4}-\d{4,7}", re.I)
+        if RpmType.sec not in pkg_type:
+            latest_changelog = self.get_latest_changelogs(package)
+            # 获取的changelog格式如下
+            # [{'author': 'gaoxingwang <gaoxingwang@huawei.com> - 1.26.2-9',
+            #   'text': "- Type:bugfix\n- ID:NA\n- SUG:NA\n- DESC:fix 'nmcli -f NAME,ACTIVE',active column display error",
+            #   'timestamp': datetime.date(2021, 8, 4)},
+            #  {'author': 'gaoxingwang <gaoxingwang@huawei.com> - 1.26.2-8',
+            #   'text': '- Type:bugfix\n- ID:NA\n- SUG:NA\n- DESC:sync from upstream, fix wrongly considering ipv6.may-fail for ipv4',
+            #    'timestamp': datetime.date(2021, 8, 3)}]
+            for item in latest_changelog:
+                if cve_regex.search(item["text"]):
+                    pkg_type.append(RpmType.sec)
+                    break
+        return pkg_type
 
     def get_available_update_pkgs_details(self):
         # 获取可更新包的详细信息
         logging.debug("get update pkg's detail list")
         pkgs = self.get_available_update_pkgs()
-        pkgs_sec = RpmType.get_sec_pkgs_list(pkgs)
-        pkgs_bug = RpmType.get_bug_pkgs_list(pkgs)
-        pkgs_enhanc = RpmType.get_enhanc_pkgs_list(pkgs)
         pkgs_detail = []
         for pkg in list(pkgs):
             pkg_detail = {"name": pkg.name,
@@ -82,16 +128,8 @@ class UtBase(dnf.Base):
                           "license": pkg.license,
                           "desc": pkg.description,
                           "changelogs": pkg.changelogs,
-                          "type": []}
-            if pkg in pkgs_sec:
-                # 包类型添加安全
-                pkg_detail["type"].append(RpmType.sec)
-            if pkg in pkgs_bug:
-                # 包类型添加bugfix
-                pkg_detail["type"].append(RpmType.bug)
-            if pkg in pkgs_enhanc:
-                # 包类型添加性能提升
-                pkg_detail["type"].append(RpmType.enhanc)
+                          "last_changelogs": self.get_latest_changelogs(pkg),
+                          "type": self.check_pkgs_update_type(pkg)}
             pkgs_detail.append(pkg_detail)
         return pkgs_detail
 
