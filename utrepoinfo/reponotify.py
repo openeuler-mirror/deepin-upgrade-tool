@@ -9,7 +9,7 @@ import logging
 
 gi.require_version('Notify', '0.7')
 gi.require_version('Gtk', '3.0')
-from gi.repository import Notify
+from gi.repository import Notify, GLib
 from dbus.mainloop.glib import DBusGMainLoop
 from utrepoinfo.utils import get_available_update_rpmpkgs
 from utrepoinfo.config import CONNECT_SIGNAL, LOGO, LOG_FILE, WINDOW_CMDLINE
@@ -33,13 +33,15 @@ class RpmUpdateNotify(object):
                                                     LOGO)
         self.notification.set_urgency(Notify.Urgency.NORMAL)
         self.notification.set_urgency(2)
+        self.notification.set_hint('x-deepin-action-_details', GLib.Variant.new_string(WINDOW_CMDLINE[1]))
+
         # 使用正常超时机制，不再增加永不过期
         # self.notification.set_timeout(1000000)
 
     def notify_action(self):
         # 带有动作的通知
-        self.notification.add_action("Cancle", _("Cancle"), self.cancle_button)
-        self.notification.add_action("Details", _("Details"), self.detail_button)
+        self.notification.add_action("_cancle", _("Cancle"), self.cancle_button)
+        self.notification.add_action("_details", _("Details"), self.detail_button)
         self.notify()
 
     def notify(self):
@@ -49,8 +51,6 @@ class RpmUpdateNotify(object):
     def detail_button(self, notification, action, user_data=None):
         # 详细信息按钮
         logging.debug(action)
-        t = Thread(target=subprocess.call, args=(WINDOW_CMDLINE,))
-        t.start()
 
     def cancle_button(self, notification, action, user_data=None):
         # 取消按钮
@@ -83,6 +83,27 @@ def get_session_cmd_pid(sid, cmdline=None):
     return None
 
 
+def get_user_cmd_pid(uid, cmdline=None):
+    """
+    Gets the PID of the specified command in the same uid
+
+    Args:
+        uid: user id
+        cmdline: command
+
+    Returns:
+
+    """
+    if cmdline is None:
+        cmdline = WINDOW_CMDLINE
+    # 遍历进程列表，获取匹配的进程列表
+    for proc in psutil.process_iter(['pid', 'uids', 'cmdline']):
+        pinfo = proc.info
+        if pinfo['cmdline'] == cmdline and pinfo['uids'].real == uid:
+            return pinfo['pid']
+    return None
+
+
 def update_notify(*args):
     """
     update notifaction
@@ -92,11 +113,11 @@ def update_notify(*args):
     Returns:
 
     """
-    # 获取session id 用于检测是否存在同一session id下的指定进程
-    sid = os.getsid(os.getpid())
-    logging.debug("sid is :{}".format(sid))
-    pid = get_session_cmd_pid(sid)
-    logging.debug("session id is: {}".format(pid))
+    # 获取当前用户的id
+    uid = os.getuid()
+    logging.debug("uid is :{}".format(uid))
+    pid = get_user_cmd_pid(uid)
+    logging.debug("cmd pid is: {}".format(pid))
     # 获取rpm更新列表
     rpmpkgs = get_available_update_rpmpkgs()
     rpmpkgs_num = len(rpmpkgs)
@@ -124,6 +145,11 @@ def lock_window(*args):
 
 
 def main():
+    # logging.basicConfig(
+    #     level=logging.DEBUG,
+    #     format='%(levelname)s %(asctime)s %(filename)s[line:%(lineno)d] %(message)s',
+    #     datefmt='%Y-%m-%d %H:%M:%S'
+    # )
     logging.debug('Send first notification')
     update_notify()
     logging.debug('Start to enter the daemon and listen for the login of the current session')
