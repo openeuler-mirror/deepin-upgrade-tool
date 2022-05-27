@@ -5,7 +5,7 @@ import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import subprocess
 
-RECOARDFILE = "/run/infomation/msg.txt"
+RECOARDFILE = "/var/infomation/msg.txt"
 
 def Notify(msg):
     subprocess.run(["gdbus",\
@@ -17,7 +17,7 @@ def Notify(msg):
         "/org/freedesktop/Notifications",\
         "--method",\
         "org.freedesktop.Notifications.Notify",\
-        "identifier",\
+        "rpm update infomation",\
         "1",\
         "/usr/share/repoinfo/notify.png", \
         "",\

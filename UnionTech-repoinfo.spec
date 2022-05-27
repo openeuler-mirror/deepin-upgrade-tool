@@ -1,6 +1,6 @@
 Name:     UnionTech-repoinfo
 Version:  1.0
-Release:  1
+Release:  2
 Summary:  Available package information display
 License:  GPL
 URL:      http://gitlabxa.uniontech.com/
@@ -42,7 +42,7 @@ install -m755 %{name}-%{version}/src/reponotify.py $RPM_BUILD_ROOT/%{_bindir}/re
 
 %preun
 %systemd_preun repoinfo.timer
-rm -f /run/infomation/msg.txt
+rm -f /var/infomation/msg.txt
 
 %postun
 %systemd_postun_with_restart repoinfo.timer
@@ -61,5 +61,8 @@ rm -f /run/infomation/msg.txt
 %attr(0644,root,root) /root/.config/autostart/repoinfo.desktop
 
 %changelog
+ Fri Aug 27 2021 heyitao <heyitao@uniontech.com> - 1.0-2
+- modify the title of the notify tip
+
  Thu Jue 3 2021 heyitao <heyitao@uniontech.com> - 1.0-1
 - display repo infomation
