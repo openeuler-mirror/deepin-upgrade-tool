@@ -6,10 +6,9 @@ gi.require_version('Notify', '0.7')
 gi.require_version('Gtk', '3.0')
 from gi.repository import Notify
 from gi.repository import Gtk
-from utrepoinfo.utils import read_jsonfile_to_pyobj
-from utrepoinfo.config import RPMPKGSDETAILS, LOGFILE, LOGOPNG
+from utrepoinfo.utils import get_available_update_rpmpkgs
+from utrepoinfo.config import LOGFILE, LOGOPNG
 from utrepoinfo.window import main as main_window
-from utrepoinfo.rpm import get_local_rpmpkgs
 
 locale_path = '/usr/share/locale'
 gettext.bindtextdomain('utrepoinfo', locale_path)
@@ -43,16 +42,7 @@ class RpmUpdateNotify(object):
 
 def main():
     logging.basicConfig(filename=LOGFILE, level=logging.INFO)
-    try:
-        rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
-        local_rpms = get_local_rpmpkgs()
-        for i in rpmpkgs:
-            if local_rpms[i["name"]] == "{version}-{release}".format(version=i["version"], release=i["release"]):
-                rpmpkgs.remove(i)
-    except Exception as e:
-        rpmpkgs = []
-        logging.error("Can't get rpmpkgs")
-        logging.error(e)
+    rpmpkgs = get_available_update_rpmpkgs()
     rpmpkgs_num = len(rpmpkgs)
     if rpmpkgs_num > 0:
         RpmUpdateNotify("There are {0} updates available".format(str(rpmpkgs_num))).notify()

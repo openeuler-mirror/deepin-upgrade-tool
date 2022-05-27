@@ -1,6 +1,6 @@
-test_list=["aa","bb"]
+test_list = ["aa", "bb"]
 print(" ".join(test_list))
-json_str="""[
+json_str = """[
     {
         "name": "python-qt5-rpm-macros",
         "release": "6.uel20",
@@ -46,10 +46,11 @@ json_str="""[
 ]
 """
 import json
-pyobj=json.loads(json_str)
+
+pyobj = json.loads(json_str)
 # print(pyobj)
 for i in pyobj:
-    if i["name"]=="python3-qt5":
+    if i["name"] == "python3-qt5":
         pyobj.remove(i)
 
 print(pyobj)

@@ -1,6 +1,8 @@
 import os
 import json
-from utrepoinfo.config import RECOARDFILE
+import logging
+from utrepoinfo.config import RECOARDFILE, RPMPKGSDETAILS
+from utrepoinfo.rpm import get_local_rpmpkgs
 
 
 def del_file(filename):
@@ -33,6 +35,20 @@ def sigterm_handler(sig, frame):
 
 def timeout_handler(sig, frame):
     raise RuntimeError
+
+
+def get_available_update_rpmpkgs():
+    try:
+        rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
+        local_rpms = get_local_rpmpkgs()
+        for i in rpmpkgs[:]:
+            if local_rpms[i["name"]] == "{version}-{release}".format(version=i["version"], release=i["release"]):
+                rpmpkgs.remove(i)
+    except Exception as e:
+        rpmpkgs = []
+        logging.error("Can't get rpmpkgs")
+        logging.error(e)
+    return rpmpkgs
 
 
 if __name__ == '__main__':
