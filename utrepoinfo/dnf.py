@@ -1,4 +1,5 @@
 import logging
+import argparse
 import dnf
 import dnf.cli.progress
 from dnf.cli.format import format_number
@@ -30,7 +31,6 @@ class UtBase(dnf.Base):
         except Exception as e:
             logging.warning("connetct repo error")
             logging.warning(e)
-
 
     def get_available_update_pkgs(self):
         # 获取可更新的软件包
@@ -69,7 +69,7 @@ class UtBase(dnf.Base):
 
     def print_trans_info(self):
         # 打印要执行的事务
-        output=self.output.list_transaction(self.transaction)
+        output = self.output.list_transaction(self.transaction)
         print(output)
         logging.debug(output)
 
@@ -88,3 +88,12 @@ class UtBase(dnf.Base):
         except Exception as e:
             print("Install error")
             print(e)
+
+
+def install():
+    parse = argparse.ArgumentParser()
+    parse.add_argument("-l", "--pkgs", help="rpm pkg list")
+    args = parse.parse_args()
+    rpmpkgs = args.pkgs.split(' ')
+    with UtBase() as base:
+        base.update_rpmpkgs(rpmpkgs)
