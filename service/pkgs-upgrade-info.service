@@ -1,10 +1,10 @@
 [Unit]
-Description=Repo infomation Service
+Description=Deepin upgrade info Service
 After=multi-user.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /usr/bin/repoinfo
+ExecStart=/usr/bin/python3 /usr/bin/pkgs_upgrade_info
 KillSignal=SIGTERM
 
 [Install]

@@ -2,8 +2,8 @@ import os
 import json
 import logging
 import datetime
-from utrepoinfo.config import REPO_CLI_MSG, REPO_DATA
-from utrepoinfo.rpm import get_local_rpmpkgs
+from com_deepin_upgrade.config import REPO_CLI_MSG, REPO_DATA
+from com_deepin_upgrade.rpm import get_local_rpmpkgs
 
 
 class ComplexEncoder(json.JSONEncoder):
