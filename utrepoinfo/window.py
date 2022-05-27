@@ -1,8 +1,9 @@
 import sys
+import datetime
 import logging
 from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, QPushButton, QLabel, QWidget, \
     QTableWidgetItem, QTableWidget, QDesktopWidget, QMainWindow, QAbstractItemView, QHBoxLayout, QStyle, \
-    QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox, QRadioButton
+    QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal, QProcess, QTimer
 from utrepoinfo.config import LOGOPNG
@@ -38,6 +39,7 @@ class Ui_rpm_update(QMainWindow):
         logo_pic = QPixmap(LOGOPNG)
         self.logo.setPixmap(logo_pic.scaled(80, 76))
 
+        # title 设置
         self.title = QLabel(self)
         self.title.setGeometry(QRect(113, 26, 396, 25))
         font = QFont()
@@ -46,7 +48,7 @@ class Ui_rpm_update(QMainWindow):
         font.setWeight(75)
         self.title.setFont(font)
         self.title.setObjectName("title")
-
+        # 描述设置
         self.desc = QLabel(self)
         self.desc.setGeometry(QRect(113, 61, 396, 40))
         self.desc.setTextFormat(Qt.AutoText)
@@ -54,26 +56,32 @@ class Ui_rpm_update(QMainWindow):
         self.desc.setWordWrap(True)
         self.desc.setObjectName("desc")
 
+        # 自定义隐藏按钮
         self.hidebutton = QPushButton(self)
         self.hidebutton.setGeometry(QRect(542, 0, 50, 50))
         self.hidebutton.setObjectName("hide")
         self.hidebutton.clicked.connect(self.hide)
 
+        # 自定义关闭按钮
         self.closebutton = QPushButton(self)
         self.closebutton.setGeometry(QRect(592, 0, 50, 50))
         self.closebutton.setObjectName("close")
         # self.closebutton.clicked.connect(QApplication.instance().quit)
         self.closebutton.clicked.connect(self.close_event)
 
+        # 全选按钮
         self.select_all = QCheckBox(self)
         self.select_all.setGeometry(QRect(34, 110, 99, 26))
         self.select_all.setObjectName("select_all")
         self.select_all.clicked.connect(self.select_all_action)
+
+        # 安全更新按钮
         self.select_security = QCheckBox(self)
         self.select_security.setGeometry(QRect(150, 110, 141, 26))
         self.select_security.setObjectName("select_security")
         self.select_security.clicked.connect(self.select_security_action)
 
+        # rpm包信息展示
         self.rpm_table_widget = QTableWidget(self)
         # self.rpm_table_widget.setGeometry(QRect(10, 125, 620, 226))
         self.rpm_table_widget.setGeometry(QRect(10, 140, 620, 211))
@@ -82,11 +90,13 @@ class Ui_rpm_update(QMainWindow):
         self.set_rpm_table_widget_header()
         self.init_rpm_info()
 
+        # 输出口
         self.output_console = QTextBrowser(self)
         self.output_console.setGeometry(QRect(10, 362, 620, 103))
         self.output_console.setObjectName("output_console")
         self.output_console.setReadOnly(True)
 
+        # 状态栏
         self.rpm_status = QLabel(self)
         self.rpm_status.setGeometry(QRect(19, 475, 601, 20))
         font = QFont()
@@ -101,16 +111,19 @@ class Ui_rpm_update(QMainWindow):
         # self.cancle.setProperty("name", 'btn')
         # self.cancle.clicked.connect(self.cancle_process)
 
+        # 更新按钮
         self.update = QPushButton(self)
         self.update.setGeometry(QRect(220, 512, 200, 36))
         self.update.setObjectName("update")
         self.update.setProperty("name", 'btn')
         self.update.clicked.connect(self.update_rpmpkges)
+
         # 安装rpm进程
         self.process = QProcess(self)
         self.process.readyRead.connect(self.output_display)
         self.process.finished.connect(self.stop_install)
-        # Init QSystemTrayIcon
+
+        # 托盘区设置
         self.repo_tray()
         self.setStyleSheet(qss_style)
         self.retranslateUi(self)
@@ -275,6 +288,13 @@ class Ui_rpm_update(QMainWindow):
         return QObject.event(source, event)
 
     def show_rpm_info(self, row):
+        def format_changelog(changelog):
+            """Return changelog formatted as in spec file"""
+            chlog_str = '* %s %s\n%s\n' % (
+                datetime.datetime.strptime(changelog['timestamp'], '%Y-%m-%d').strftime("%a %b %d %Y"),
+                changelog['author'],
+                changelog['text'])
+            return chlog_str
         def get_rpm_info(rpmpkg):
             output_list = []
             name = "{0:<12}: {1}".format("Name", rpmpkg["name"])
@@ -299,6 +319,10 @@ class Ui_rpm_update(QMainWindow):
             output_list.append(license)
             desc = "{0:<12}: {1}".format("Description", rpmpkg["desc"])
             output_list.append(desc)
+            chlog = "{0:<12}:".format("Changelogs")
+            output_list.append(chlog)
+            for ch in rpmpkg["last_changelogs"]:
+                output_list.append(format_changelog(ch))
             return "\n".join(output_list)
 
         self.output_console.clear()
