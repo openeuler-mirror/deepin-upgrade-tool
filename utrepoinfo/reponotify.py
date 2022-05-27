@@ -26,7 +26,8 @@ def Notify(msg):
         "{}",\
         "60000"],stdin=None, input=None, stdout=None, stderr=None, shell=False, timeout=None, check=False)
 
-#first login display the notifycation 
+#first login display the notifycation
+Notify("aaa")
 if os.access(RECOARDFILE, os.R_OK):
     f = open(RECOARDFILE)
     msg = f.read()
