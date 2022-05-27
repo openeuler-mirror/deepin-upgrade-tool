@@ -1,9 +1,18 @@
 import os
 import json
 import logging
+import datetime
 from utrepoinfo.config import RECOARDFILE, RPMPKGSDETAILS
 from utrepoinfo.rpm import get_local_rpmpkgs
 
+class ComplexEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(obj, datetime.date):
+            return obj.strftime('%Y-%m-%d')
+        else:
+            return json.JSONEncoder.default(self, obj)
 
 def del_file(filename):
     if os.path.exists(filename):
@@ -20,12 +29,12 @@ def write_file(file, content):
 
 def write_pyobj_to_jsonfile(file, obj):
     with open(file, 'w') as f:
-        json.dump(obj, f, indent=4)
+        json.dump(obj, f, indent=4, cls=ComplexEncoder)
 
 
 def read_jsonfile_to_pyobj(file):
     with open(file, 'r') as f:
-        return json.load(f)
+        return json.load(f, cls=ComplexEncoder)
 
 
 def sigterm_handler(sig, frame):
