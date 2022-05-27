@@ -1,0 +1,11 @@
+[Unit]
+Description=Repo infomation Service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/bin/repoinfo
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
