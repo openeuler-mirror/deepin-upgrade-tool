@@ -167,11 +167,16 @@ class Ui_rpm_update(QMainWindow):
 
     def init_rpm_info(self):
         self.check_status = []
+        self.clean_rpm_info()
         for i in self.rpmpkgs:
             ck = self.add_rpm_item("{name}({arch})".format(name=i["name"], arch=i["arch"]),
                                    "{version}-{release}".format(version=i["version"], release=i["release"]),
                                    i["downloadsize_human_readable"])
             self.check_status.append([ck, i["name"]])
+
+    def clean_rpm_info(self):
+        self.rpm_table_widget.clearContents()
+        self.rpm_table_widget.setRowCount(0)
 
     def select_all_action(self, event):
         if event:
@@ -213,7 +218,7 @@ class Ui_rpm_update(QMainWindow):
                 self.check_status[i][0].setDisabled(True)
         self.output_console.clear()
         # self.process.start("ping", ["baidu.com", "-c", "4"])
-        self.process.start("pkexec", ["utrpminstall"," ".join(select_rpm_list)])
+        self.process.start("pkexec", ["utrpminstall", "-l", " ".join(select_rpm_list)])
 
     def eventFilter(self, source, event):
         if self.rpm_table_widget.selectedIndexes() != []:
