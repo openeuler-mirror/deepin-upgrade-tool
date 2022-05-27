@@ -8,18 +8,26 @@ from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObje
 from utrepoinfo.config import RPMPKGSDETAILS, LOGOPNG
 from utrepoinfo.utils import read_jsonfile_to_pyobj
 from utrepoinfo.qss import qss_style
+from utrepoinfo.rpm import get_local_rpmpkgs
 
 
 class Ui_rpm_update(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.init_rpmdata()
+        self.initUI()
+
+    def init_rpmdata(self):
         try:
             self.rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
+            local_rpms=get_local_rpmpkgs()
+            for i in self.rpmpkgs:
+                if local_rpms[i["name"]]=="{version}-{release}".format(version=i["version"],release=i["release"]):
+                    self.rpmpkgs.remove(i)
         except Exception as e:
             self.rpmpkgs = []
             logging.error("Can't get rpmpkgs")
             logging.error(e)
-        self.initUI()
 
     def initUI(self):
         # 移动到屏幕中心
@@ -331,12 +339,7 @@ class Ui_rpm_update(QMainWindow):
 
     def update_tray(self):
         if self.isHidden():
-            try:
-                self.rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
-            except Exception as e:
-                self.rpmpkgs = []
-                logging.error("Can't get rpmpkgs")
-                logging.error(e)
+            self.init_rpmdata()
             self.tray_icon.setToolTip("There are {} updates available".format(str(len(self.rpmpkgs))))
             self.init_rpm_info()
 
