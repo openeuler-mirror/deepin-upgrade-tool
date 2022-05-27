@@ -1,10 +1,10 @@
-from com_deepin_upgrade.config import PKG_PATH
+from com_deepin_upgrade.config import PIXMAPS_PATH
 
 qss_style = '''
 QPushButton#close
 {
     border-style:none;
-    background-image: url(%s/img/window_close_normal_light.png);
+    background-image: url(%s/window_close_normal_light.png);
     background-position:center;
     background-repeat:no-repeat;
 }
@@ -18,7 +18,7 @@ QPushButton#close::hover
 QPushButton#hide
 {
     border-style:none;
-    background-image: url(%s/img/window_min_normal_light.png);
+    background-image: url(%s/window_min_normal_light.png);
     background-position:center;
     background-repeat:no-repeat;
 }
@@ -105,4 +105,4 @@ QHeaderView::section
 {
     border-width:6;
 }
-''' % (PKG_PATH, PKG_PATH)
+''' % (PIXMAPS_PATH, PIXMAPS_PATH)

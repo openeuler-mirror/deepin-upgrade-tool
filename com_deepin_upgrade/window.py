@@ -150,9 +150,15 @@ class Ui_pkgs_upgrade(QMainWindow):
         self.output_console.ensureCursorVisible()
 
     def disable_install_pkgs_ck(self):
+        install_pkgs_id = []
         for i in range(self.rpm_table_widget.rowCount()):
             if self.rpmpkgs_select_status[i][0].isChecked():
                 self.rpmpkgs_select_status[i][0].setDisabled(True)
+                install_pkgs_id.append(self.rpmpkgs_select_status[i][3])
+        # pkgs内部移除已安装的软件包
+        install_pkgs = [self.rpmpkgs[i] for i in install_pkgs_id]
+        for pkg in install_pkgs:
+            self.rpmpkgs.remove(pkg)
 
     def stop_install(self):
         self.rpm_table_widget.setEnabled(True)
@@ -214,6 +220,8 @@ class Ui_pkgs_upgrade(QMainWindow):
         # 设置表头显示方式
         self.rpm_table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         # header_checkbox.select_all_clicked.connect(self.select_all_action)
+        # 设置表头，不因点击而变化
+        self.rpm_table_widget.horizontalHeader().setHighlightSections(False)
 
         # 前三列固定宽度
         self.rpm_table_widget.setColumnWidth(0, 60)
@@ -233,16 +241,26 @@ class Ui_pkgs_upgrade(QMainWindow):
                 type_i18n_list.append(RpmType.i18n_type_dict.get(ptype))
             return ','.join(type_i18n_list)
 
-    def init_rpm_info(self):
-
+    def init_rpm_info(self, type=None):
         self.rpmpkgs_select_status = []
         self.clean_rpm_info()
-        for pkginfo in self.rpmpkgs:
-            rpmpkg_type = self.convert_type_to_i18n_str(pkginfo["type"])
-            ck = self.add_rpm_item("{name}({arch})".format(name=pkginfo["name"], arch=pkginfo["arch"]),
-                                   "{version}-{release}".format(version=pkginfo["version"], release=pkginfo["release"]),
-                                   rpmpkg_type, pkginfo["downloadsize_human_readable"])
-            self.rpmpkgs_select_status.append([ck, pkginfo["name"], pkginfo["type"]])
+        for pkg_id in range(len(self.rpmpkgs)):
+            pkginfo = self.rpmpkgs[pkg_id]
+            pkginfo_type = pkginfo["type"]
+            pkginfo_type_i18n = self.convert_type_to_i18n_str(pkginfo_type)
+            if type is None:
+                ck = self.add_rpm_item("{name}({arch})".format(name=pkginfo["name"], arch=pkginfo["arch"]),
+                                       "{version}-{release}".format(version=pkginfo["version"],
+                                                                    release=pkginfo["release"]),
+                                       pkginfo_type_i18n, pkginfo["downloadsize_human_readable"])
+                self.rpmpkgs_select_status.append([ck, pkginfo["name"], pkginfo["type"], pkg_id])
+            else:
+                if type in pkginfo_type:
+                    ck = self.add_rpm_item("{name}({arch})".format(name=pkginfo["name"], arch=pkginfo["arch"]),
+                                           "{version}-{release}".format(version=pkginfo["version"],
+                                                                        release=pkginfo["release"]),
+                                           pkginfo_type_i18n, pkginfo["downloadsize_human_readable"])
+                    self.rpmpkgs_select_status.append([ck, pkginfo["name"], pkginfo["type"], pkg_id])
 
     def clean_rpm_info(self):
         self.rpm_table_widget.clearContents()
@@ -252,6 +270,8 @@ class Ui_pkgs_upgrade(QMainWindow):
         if event:
             # 设置安全更新为否
             self.select_security.setCheckState(Qt.Unchecked)
+            self.init_rpm_info()
+
             # 将所有checkbox设置为是
             for i in self.rpmpkgs_select_status:
                 # 只修改可编辑按钮的状态
@@ -268,6 +288,8 @@ class Ui_pkgs_upgrade(QMainWindow):
         if event:
             # 设置选择全部为否
             self.select_all.setCheckState(Qt.Unchecked)
+            # 重新渲染tablewidgets
+            self.init_rpm_info(RpmType.sec)
             # 将所有checkbox设置为是
             for i in self.rpmpkgs_select_status:
                 # 只修改可编辑按钮的状态

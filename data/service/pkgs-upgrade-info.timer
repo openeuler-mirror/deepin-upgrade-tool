@@ -2,7 +2,7 @@
 Description=Deepin upgrade timer
 
 [Timer]
-OnBootSec=10min
+OnBootSec=2min
 OnUnitInactiveSec=24h
 Unit=pkgs-upgrade-info.service
 
