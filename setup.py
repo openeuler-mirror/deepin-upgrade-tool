@@ -23,7 +23,10 @@ setuptools.setup(
                             # utrpminstall 安装命令
                             'utrpminstall=utrepoinfo.dnf:install',
                             # repoinfo 查询命令
-                            'repoinfo=utrepoinfo.repoinfo:main'],
+                            'repoinfo=utrepoinfo.repoinfo:main',
+                            # 主界面
+                            'utrpmupdatewindow=utrepoinfo.window:main'
+                            ],
     },
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -116,6 +116,7 @@ class Ui_rpm_update(QMainWindow):
         self.update.setGeometry(QRect(220, 512, 200, 36))
         self.update.setObjectName("update")
         self.update.setProperty("name", 'btn')
+        self.update.setDisabled(True)
         self.update.clicked.connect(self.update_rpmpkges)
 
         # 安装rpm进程
@@ -341,7 +342,10 @@ class Ui_rpm_update(QMainWindow):
         for i in range(self.rpm_table_widget.rowCount()):
             if self.rpmpkgs_select_status[i][0].isChecked():
                 select_count += 1
-
+        if select_count == 0:
+            self.update.setDisabled(True)
+        else:
+            self.update.setEnabled(True)
         self.rpm_status.setText("{0} updates selected".format(str(select_count)))
 
     # 清空rpm信息展示列表
