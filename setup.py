@@ -25,7 +25,9 @@ setuptools.setup(
                             # repoinfo 查询命令
                             'repoinfo=utrepoinfo.repoinfo:main',
                             # 主界面
-                            'utrpmupdatewindow=utrepoinfo.window:main'
+                            'utrpmupdatewindow=utrepoinfo.window:main',
+                            # 增加可更新软件包统计命令，方便cui调用
+                            'utrpmupdatecount=utrepoinfo.utils:get_available_update_rpmpkgs_number'
                             ],
     },
     classifiers=[
