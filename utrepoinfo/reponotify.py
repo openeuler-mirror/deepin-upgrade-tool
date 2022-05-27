@@ -9,6 +9,7 @@ from gi.repository import Gtk
 from utrepoinfo.utils import read_jsonfile_to_pyobj
 from utrepoinfo.config import RPMPKGSDETAILS, LOGFILE, LOGOPNG
 from utrepoinfo.window import main as main_window
+from utrepoinfo.rpm import get_local_rpmpkgs
 
 locale_path = '/usr/share/locale'
 gettext.bindtextdomain('utrepoinfo', locale_path)
@@ -43,12 +44,19 @@ class RpmUpdateNotify(object):
 def main():
     logging.basicConfig(filename=LOGFILE, level=logging.INFO)
     try:
-        rpmpkgs_num = len(read_jsonfile_to_pyobj(RPMPKGSDETAILS))
-        if rpmpkgs_num > 0:
-            RpmUpdateNotify("There are {0} updates available".format(str(rpmpkgs_num))).notify()
-            Gtk.main()
+        rpmpkgs = read_jsonfile_to_pyobj(RPMPKGSDETAILS)
+        local_rpms = get_local_rpmpkgs()
+        for i in rpmpkgs:
+            if local_rpms[i["name"]] == "{version}-{release}".format(version=i["version"], release=i["release"]):
+                rpmpkgs.remove(i)
     except Exception as e:
+        rpmpkgs = []
+        logging.error("Can't get rpmpkgs")
         logging.error(e)
+    rpmpkgs_num = len(rpmpkgs)
+    if rpmpkgs_num > 0:
+        RpmUpdateNotify("There are {0} updates available".format(str(rpmpkgs_num))).notify()
+        Gtk.main()
 
 
 if __name__ == '__main__':
