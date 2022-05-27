@@ -59,13 +59,14 @@ def createlogfile():
     for line in outs.decode("utf-8").splitlines():
         if re.search("uel20", line):
             num += 1
-    msg="Available upgrade package: "+str(num)
+    logging.info('Connect repo server success')
+    msg="New package:"+str(num)
     myrecoard(msg)
     logging.info(msg)
 
 def main():
     logging.info("Main fun start")
-    atexit.register(delfile,filename = LOGFILE)
+#    atexit.register(delfile,filename = LOGFILE)
     createlogfile()
     logging.info("Main fun end")
 

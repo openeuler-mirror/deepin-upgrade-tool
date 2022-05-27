@@ -2,7 +2,6 @@
 Description=repoinfo timer
 
 [Timer]
-OnActiveSec=0
 OnCalendar=*-*-* 00:59:00
 Unit=repoinfo.service
 
