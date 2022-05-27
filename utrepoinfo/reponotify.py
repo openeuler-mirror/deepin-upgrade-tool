@@ -29,7 +29,7 @@ class RpmUpdateNotify(object):
 
     def notify(self):
         self.notification.add_action("Cancle", _("Cancle"), self.cancle_button)
-        self.notification.add_action("Update", "Update", self.update_button)
+        self.notification.add_action("Update", _("Update"), self.update_button)
         self.notification.show()
 
     def update_button(self, notification, action, user_data=None):
@@ -53,18 +53,6 @@ def upgrade_notify(*args):
 def main():
     # 登陆提醒用户更新
     upgrade_notify()
-    # 监听锁定登陆
-    DBusGMainLoop(set_as_default=True)
-    bus = dbus.SystemBus()
-    bus.add_signal_receiver(  # define the signal to listen to
-        upgrade_notify,  # callback function
-        'Unlock',  # signal name
-        'org.freedesktop.login1.Session',  # interface
-        'org.freedesktop.login1'  # bus name
-    )
-    mainloop = gi.repository.GLib.MainLoop()
-    mainloop.run()
-
 
 if __name__ == '__main__':
     main()
