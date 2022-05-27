@@ -504,7 +504,6 @@ def main():
     ex = Ui_rpm_update()
     # 设置窗口透明度，目前在dde上显示有异常
     ex.setWindowOpacity(0.5)
-    # ex.setWindowIcon(LOGO)
     ex.show()
     app.exec_()
 
