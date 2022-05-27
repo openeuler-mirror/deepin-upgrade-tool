@@ -1,4 +1,4 @@
-from utrepoinfo.config import DATAPATH
+from utrepoinfo.config import PKG_PATH
 
 qss_style = '''
 QPushButton#close
@@ -99,4 +99,4 @@ QHeaderView::section
 {
     border-width:6;
 }
-''' % (DATAPATH, DATAPATH)
+''' % (PKG_PATH, PKG_PATH)
