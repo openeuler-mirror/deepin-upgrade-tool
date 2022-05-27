@@ -4,9 +4,16 @@ import argparse
 import re
 import rpm
 import dnf
+import gettext
 import dnf.cli.progress
 from dnf.cli.format import format_number
 from dnf.cli.output import Output, CliTransactionDisplay
+from com_deepin_upgrade.config import I18N_DOMAIN, LOCALE_PATH
+
+locale_path = LOCALE_PATH
+gettext.bindtextdomain(I18N_DOMAIN, locale_path)
+gettext.textdomain(I18N_DOMAIN)
+_ = gettext.gettext
 
 
 class RpmType(object):
@@ -14,6 +21,12 @@ class RpmType(object):
     bug = "bugfix"
     sec = "security"
     enhanc = "enhancement"
+
+    i18n_type_dict = {
+        bug: _("bugfix"),
+        sec: _("security"),
+        enhanc: _("enhancement"),
+    }
 
     @classmethod
     def get_sec_pkgs_list(cls, query):
@@ -172,3 +185,7 @@ def install():
     rpmpkgs = args.pkgs.split(' ')
     with UtBase() as base:
         base.update_rpmpkgs(rpmpkgs)
+
+
+if __name__ == '__main__':
+    pass

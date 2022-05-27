@@ -1,7 +1,6 @@
 import gi
 import gettext
 import os
-import subprocess
 import psutil
 import dbus
 import signal
@@ -11,13 +10,12 @@ gi.require_version('Notify', '0.7')
 gi.require_version('Gtk', '3.0')
 from gi.repository import Notify, GLib
 from dbus.mainloop.glib import DBusGMainLoop
-from utrepoinfo.utils import get_available_update_rpmpkgs
-from utrepoinfo.config import CONNECT_SIGNAL, LOGO, LOG_FILE, WINDOW_CMDLINE
-from threading import Thread
+from com_deepin_upgrade.utils import get_available_update_rpmpkgs
+from com_deepin_upgrade.config import LOGO, WINDOW_CMDLINE, I18N_DOMAIN, LOCALE_PATH
 
-locale_path = '/usr/share/locale'
-gettext.bindtextdomain('utrepoinfo', locale_path)
-gettext.textdomain('utrepoinfo')
+locale_path = LOCALE_PATH
+gettext.bindtextdomain(I18N_DOMAIN, locale_path)
+gettext.textdomain(I18N_DOMAIN)
 _ = gettext.gettext
 
 
@@ -28,7 +26,7 @@ class RpmUpdateNotify(object):
             content:str
         """
         # 初始化通知信息
-        Notify.init(_("Software Updates Available"))
+        Notify.init(_("Software Updates Tool"))
         self.notification = Notify.Notification.new(_("Software Updates Available"), content,
                                                     LOGO)
         self.notification.set_urgency(Notify.Urgency.NORMAL)
@@ -124,8 +122,8 @@ def update_notify(*args):
     logging.debug("The number of RPM packages is: {}".format(rpmpkgs_num))
     # 当存在可更新的rpm包时通知
     if rpmpkgs_num > 0:
-        msg = gettext.ngettext("There is {0} update available".format(str(rpmpkgs_num)),
-                               "There are {0} updates available".format(str(rpmpkgs_num)), rpmpkgs_num)
+        msg = gettext.ngettext("There is {0} update available",
+                               "There are {0} updates available", rpmpkgs_num).format(str(rpmpkgs_num))
         # 如果存在同一会话下的桌面进程，则发的通知不带按钮
         if pid is not None:
             RpmUpdateNotify(msg).notify()

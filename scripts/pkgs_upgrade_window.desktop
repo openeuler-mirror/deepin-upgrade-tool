@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Pkgs Upgrade
+Name[zh_CN]=更新工具
+Comment=Packages upgrade reminder tool
+Comment[zh_CN]=软件包更新工具
+Exec=/usr/bin/python3 /usr/bin/pkgs_upgrade_window
+Icon = /usr/lib/python3.7/site-packages/com_deepin_upgrade/img/window_notify.png
+Terminal=false

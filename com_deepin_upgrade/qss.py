@@ -1,4 +1,4 @@
-from utrepoinfo.config import PKG_PATH
+from com_deepin_upgrade.config import PKG_PATH
 
 qss_style = '''
 QPushButton#close

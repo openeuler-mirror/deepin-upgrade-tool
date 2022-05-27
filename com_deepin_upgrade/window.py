@@ -1,18 +1,24 @@
 import sys
 import datetime
+import gettext
 import logging
 from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, QPushButton, QLabel, QWidget, \
     QTableWidgetItem, QTableWidget, QDesktopWidget, QMainWindow, QAbstractItemView, QHBoxLayout, QStyle, \
     QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal, QProcess, QTimer
-from utrepoinfo.config import LOGO, TRAY_INTERVAL
-from utrepoinfo.utils import get_available_update_rpmpkgs
-from utrepoinfo.qss import qss_style
-from utrepoinfo.dnf import RpmType
+from com_deepin_upgrade.config import LOGO, TRAY_INTERVAL, I18N_DOMAIN, LOCALE_PATH
+from com_deepin_upgrade.utils import get_available_update_rpmpkgs
+from com_deepin_upgrade.qss import qss_style
+from com_deepin_upgrade.dnf import RpmType
+
+locale_path = LOCALE_PATH
+gettext.bindtextdomain(I18N_DOMAIN, locale_path)
+gettext.textdomain(I18N_DOMAIN)
+_ = gettext.gettext
 
 
-class Ui_rpm_update(QMainWindow):
+class Ui_pkgs_upgrade(QMainWindow):
     sucess_code = 0
     cancle_code = 126
     wrong_password_code = 127
@@ -31,11 +37,12 @@ class Ui_rpm_update(QMainWindow):
         # 无边框设置
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TintedBackground)
-        self.setObjectName("rpm_update")
+        self.setObjectName("pkgs_upgrade")
         self.resize(640, 561)
         self.setCursor(QCursor(Qt.ArrowCursor))
         self.setMouseTracking(False)
         self.setWindowIcon(QIcon(LOGO))
+        self.setWindowTitle(_("rpm upgrade window"))
         # 左上角logo设置
         self.logo = QLabel(self)
         self.logo.setGeometry(15, 25, 80, 76)
@@ -52,6 +59,8 @@ class Ui_rpm_update(QMainWindow):
         font.setWeight(75)
         self.title.setFont(font)
         self.title.setObjectName("title")
+        self.title.setText(_("There are some updates available"))
+
         # 描述设置
         self.desc = QLabel(self)
         self.desc.setGeometry(QRect(113, 61, 396, 40))
@@ -59,31 +68,36 @@ class Ui_rpm_update(QMainWindow):
         self.desc.setScaledContents(False)
         self.desc.setWordWrap(True)
         self.desc.setObjectName("desc")
+        self.desc.setText(
+            _("Software updates correct errors，eliminate security vulnerabilities and provide new features"))
 
         # 自定义隐藏按钮
         self.hidebutton = QPushButton(self)
         self.hidebutton.setGeometry(QRect(542, 0, 50, 50))
         self.hidebutton.setObjectName("hide")
         self.hidebutton.clicked.connect(self.hide)
+        self.hidebutton.setToolTip(_("hide"))
 
         # 自定义关闭按钮
         self.closebutton = QPushButton(self)
         self.closebutton.setGeometry(QRect(592, 0, 50, 50))
         self.closebutton.setObjectName("close")
-        # self.closebutton.clicked.connect(QApplication.instance().quit)
         self.closebutton.clicked.connect(self.close_event)
+        self.closebutton.setToolTip(_("close"))
 
         # 全选按钮
         self.select_all = QCheckBox(self)
         self.select_all.setGeometry(QRect(34, 110, 99, 26))
         self.select_all.setObjectName("select_all")
         self.select_all.clicked.connect(self.select_all_action)
+        self.select_all.setText(_("Select All"))
 
         # 安全更新按钮
         self.select_security = QCheckBox(self)
         self.select_security.setGeometry(QRect(150, 110, 141, 26))
         self.select_security.setObjectName("select_security")
         self.select_security.clicked.connect(self.select_security_action)
+        self.select_security.setText(_("Select security"))
 
         # rpm包信息展示
         self.rpm_table_widget = QTableWidget(self)
@@ -108,12 +122,7 @@ class Ui_rpm_update(QMainWindow):
         self.rpm_status.setFont(font)
         self.rpm_status.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
         self.rpm_status.setObjectName("rpm_status")
-
-        # self.cancle = QPushButton(self)
-        # self.cancle.setGeometry(QRect(140, 512, 170, 36))
-        # self.cancle.setObjectName("cancle")
-        # self.cancle.setProperty("name", 'btn')
-        # self.cancle.clicked.connect(self.cancle_process)
+        self.rpm_status.setText(_("0 updates selected"))
 
         # 更新按钮
         self.update = QPushButton(self)
@@ -122,6 +131,7 @@ class Ui_rpm_update(QMainWindow):
         self.update.setProperty("name", 'btn')
         self.update.setDisabled(True)
         self.update.clicked.connect(self.update_rpmpkges)
+        self.update.setText(_("update"))
 
         # 安装rpm进程
         self.process = QProcess(self)
@@ -131,7 +141,6 @@ class Ui_rpm_update(QMainWindow):
         # 托盘区设置
         self.repo_tray()
         self.setStyleSheet(qss_style)
-        self.retranslateUi(self)
         QMetaObject.connectSlotsByName(self)
 
     def output_display(self):
@@ -149,18 +158,18 @@ class Ui_rpm_update(QMainWindow):
         self.rpm_table_widget.setEnabled(True)
         if self.process.exitCode() == self.sucess_code:
             self.disable_install_pkgs_ck()
-            self.rpm_status.setText("Upgrade successed")
+            self.rpm_status.setText(_("Upgrade successed"))
         elif self.process.exitCode() == self.cancle_code:
-            self.rpm_status.setText("Cancel the right escalation")
+            self.rpm_status.setText(_("Cancel upgrade"))
             # 更新失败，打开按钮
             self.update.setEnabled(True)
         elif self.process.exitCode() == self.wrong_password_code:
-            self.rpm_status.setText("Wrong privilege escalation password")
+            self.rpm_status.setText(_("Wrong privilege escalation password"))
             # 更新失败，打开按钮
             self.update.setEnabled(True)
         # TODO: 增加更多异常
         else:
-            self.rpm_status.setText("Upgrade failed")
+            self.rpm_status.setText(_("Upgrade failed"))
             # 更新完，升级按钮保持disable
             self.update.setEnabled(True)
         # TODO: 是否需要刷新cli的msg.txt
@@ -170,7 +179,7 @@ class Ui_rpm_update(QMainWindow):
             QApplication.instance().quit()
         else:
             QMessageBox.about(self, "Warning",
-                              "During the upgrade process, it is forbidden to exit the program")
+                              _("During the upgrade process, it is forbidden to exit the program"))
 
     def set_rpm_table_widget_header(self):
         # 取消选中单元格的特效
@@ -200,8 +209,8 @@ class Ui_rpm_update(QMainWindow):
         # 设置头
         # header_checkbox = CheckBoxHeader()
         # self.rpm_table_widget.setHorizontalHeader(header_checkbox)
-        # self.rpm_table_widget.setHorizontalHeaderLabels(['Install', 'Software', 'Version', "Size"])
-        self.rpm_table_widget.setHorizontalHeaderLabels(['Install', 'Software', 'Version', 'Type', 'Size'])
+        self.rpm_table_widget.setHorizontalHeaderLabels(
+            [_("Install"), _("Software"), _("Version"), _("Type"), _("Size")])
         # 设置表头显示方式
         self.rpm_table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         # header_checkbox.select_all_clicked.connect(self.select_all_action)
@@ -214,21 +223,26 @@ class Ui_rpm_update(QMainWindow):
         # 最后一列自适应宽度
         self.rpm_table_widget.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
 
+    @staticmethod
+    def convert_type_to_i18n_str(type_list):
+        if not len(type_list):
+            return _("common")
+        else:
+            type_i18n_list = []
+            for ptype in type_list:
+                type_i18n_list.append(RpmType.i18n_type_dict.get(ptype))
+            return ','.join(type_i18n_list)
+
     def init_rpm_info(self):
-        def convert_type_to_str(type_list):
-            if len(type_list) == 0:
-                return "common"
-            else:
-                return ",".join(type_list)
 
         self.rpmpkgs_select_status = []
         self.clean_rpm_info()
-        for i in self.rpmpkgs:
-            rpmpkg_type = convert_type_to_str(i["type"])
-            ck = self.add_rpm_item("{name}({arch})".format(name=i["name"], arch=i["arch"]),
-                                   "{version}-{release}".format(version=i["version"], release=i["release"]),
-                                   rpmpkg_type, i["downloadsize_human_readable"])
-            self.rpmpkgs_select_status.append([ck, i["name"], rpmpkg_type])
+        for pkginfo in self.rpmpkgs:
+            rpmpkg_type = self.convert_type_to_i18n_str(pkginfo["type"])
+            ck = self.add_rpm_item("{name}({arch})".format(name=pkginfo["name"], arch=pkginfo["arch"]),
+                                   "{version}-{release}".format(version=pkginfo["version"], release=pkginfo["release"]),
+                                   rpmpkg_type, pkginfo["downloadsize_human_readable"])
+            self.rpmpkgs_select_status.append([ck, pkginfo["name"], pkginfo["type"]])
 
     def clean_rpm_info(self):
         self.rpm_table_widget.clearContents()
@@ -291,14 +305,14 @@ class Ui_rpm_update(QMainWindow):
         logging.info("Begin install rpmpkgs")
         self.update.setDisabled(True)
         self.rpm_table_widget.setDisabled(True)
-        self.rpm_status.setText("Start upgrade...")
+        self.rpm_status.setText(_("Start upgrade..."))
         select_rpm_list = []
         for i in range(self.rpm_table_widget.rowCount()):
             if self.rpmpkgs_select_status[i][0].isChecked():
                 select_rpm_list.append(self.rpmpkgs_select_status[i][1])
                 # self.rpmpkgs_select_status[i][0].setDisabled(True)
         self.output_console.clear()
-        self.process.start("pkexec", ["utrpminstall", "-l", " ".join(select_rpm_list)])
+        self.process.start("pkexec", ["pkgs_install_tool", "-l", " ".join(select_rpm_list)])
 
     def eventFilter(self, source, event):
         if self.rpm_table_widget.selectedIndexes() != []:
@@ -367,7 +381,8 @@ class Ui_rpm_update(QMainWindow):
             self.update.setDisabled(True)
         else:
             self.update.setEnabled(True)
-        self.rpm_status.setText("{0} updates selected".format(str(select_count)))
+        self.rpm_status.setText(
+            gettext.ngettext("{0} update selected", "{0} updates selected", select_count).format(str(select_count)))
 
     # 清空rpm信息展示列表
     def cancle_process(self):
@@ -386,10 +401,10 @@ class Ui_rpm_update(QMainWindow):
             hide - hide window
             exit - exit from application
         '''
-        show_action = QAction("Show", self)
-        quit_action = QAction("Exit", self)
-        hide_action = QAction("Hide", self)
-        reload_action = QAction("Reload", self)
+        show_action = QAction(_("Show"), self)
+        quit_action = QAction(_("Exit"), self)
+        hide_action = QAction(_("Hide"), self)
+        reload_action = QAction(_("Reload"), self)
         show_action.triggered.connect(self.hide)
         show_action.triggered.connect(self.show)
         hide_action.triggered.connect(self.hide)
@@ -401,7 +416,8 @@ class Ui_rpm_update(QMainWindow):
         # tray_menu.addAction(reload_action)
         tray_menu.addAction(quit_action)
         self.tray_icon.setContextMenu(tray_menu)
-        self.tray_icon.setToolTip("There are {} updates available".format(str(len(self.rpmpkgs))))
+        self.tray_icon.setToolTip(gettext.ngettext("There is {} update available", "There are {} updates available",
+                                                   len(self.rpmpkgs)).format(str(len(self.rpmpkgs))))
         self.tray_icon.activated.connect(self.show)
         self.tray_icon.show()
         self.tray_timer()
@@ -422,7 +438,8 @@ class Ui_rpm_update(QMainWindow):
     def update_tray(self):
         if self.isHidden():
             self.init_rpmdata()
-            self.tray_icon.setToolTip("There are {} updates available".format(str(len(self.rpmpkgs))))
+            self.tray_icon.setToolTip(gettext.ngettext("There is {} update available", "There are {} updates available",
+                                                       len(self.rpmpkgs)).format(str(len(self.rpmpkgs))))
             self.init_rpm_info()
 
     # 移动到屏幕中心
@@ -434,20 +451,6 @@ class Ui_rpm_update(QMainWindow):
         # 显示到屏幕中心
         qr.moveCenter(cp)
         self.move(qr.topLeft())
-
-    def retranslateUi(self, rpm_update):
-        _translate = QCoreApplication.translate
-        rpm_update.setWindowTitle(_translate("rpm_update", "rpm update window"))
-        # self.cancle.setText(_translate("rpm_update", "cancle"))
-        self.update.setText(_translate("rpm_update", "update"))
-        self.rpm_status.setText(_translate("rpm_update", "0 update selected"))
-        self.title.setText(_translate("rpm_update", "There are some updates available"))
-        self.desc.setText(_translate("rpm_update",
-                                     "Software updates correct errors，eliminate security vulnerabilities and provide new features"))
-        self.hidebutton.setToolTip(_translate("rpm_update", "hide"))
-        self.closebutton.setToolTip(_translate("rpm_update", "close"))
-        self.select_all.setText(_translate("rpm_update", "Select All"))
-        self.select_security.setText(_translate("rpm_update", "Select security"))
 
     # 实现窗口拖动
     def mousePressEvent(self, event):
@@ -522,7 +525,7 @@ def main():
     app = QApplication(sys.argv)
     # 使用fusion，规避dtk bug
     app.setStyle("fusion")
-    ex = Ui_rpm_update()
+    ex = Ui_pkgs_upgrade()
     # 设置窗口透明度，目前在dde上显示有异常
     ex.setWindowOpacity(0.5)
     ex.show()

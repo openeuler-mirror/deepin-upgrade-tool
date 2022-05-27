@@ -1,0 +1,183 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-23 20:55+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+
+#: window.py:45
+msgid "rpm upgrade window"
+msgstr "rpm升级应用"
+
+#: window.py:62
+msgid "There are some updates available"
+msgstr "当前有一些可更新的软件包"
+
+#: window.py:72
+msgid ""
+"Software updates correct errors，eliminate security vulnerabilities and "
+"provide new features"
+msgstr "软件更新修正了错误，修复了安全漏洞并提供了一些新的特性"
+
+#: window.py:79
+msgid "hide"
+msgstr "隐藏"
+
+#: window.py:86
+msgid "close"
+msgstr "关闭"
+
+#: window.py:93
+msgid "Select All"
+msgstr "全选"
+
+#: window.py:100
+msgid "Select security"
+msgstr "安全更新"
+
+#: window.py:125
+msgid "0 update selected"
+msgstr "0个软件包更新被选中"
+
+#: window.py:134
+msgid "update"
+msgstr "更新"
+
+#: window.py:162 window.py:161
+msgid "Upgrade successed"
+msgstr "更新成功"
+
+#: window.py:164 window.py:163
+msgid "Cancel upgrade"
+msgstr "取消更新"
+
+#: window.py:168 window.py:167
+msgid "Wrong privilege escalation password"
+msgstr "错误的提权密码"
+
+#: window.py:173 window.py:172
+msgid "Upgrade failed"
+msgstr "升级失败"
+
+#: window.py:183 window.py:182
+msgid "During the upgrade process, it is forbidden to exit the program"
+msgstr "更新过程中，禁止关闭应用程序"
+
+#: window.py:214 window.py:213
+msgid "Install"
+msgstr "安装"
+
+#: window.py:214 window.py:213
+msgid "Software"
+msgstr "软件包"
+
+#: window.py:214 window.py:213
+msgid "Version"
+msgstr "版本"
+
+#: window.py:214 window.py:213
+msgid "Type"
+msgstr "类型"
+
+#: window.py:214 window.py:213
+msgid "Size"
+msgstr "大小"
+
+#: window.py:304 window.py:308
+msgid "Start upgrade..."
+msgstr "开始升级..."
+
+#: window.py:380 window.py:384
+#, python-brace-format
+msgid "{0} updates selected"
+msgstr "{0}个软件包更新被选中"
+
+#: window.py:399 window.py:403 window.py:404
+msgid "Show"
+msgstr "显示"
+
+#: window.py:400 window.py:404 window.py:405
+msgid "Exit"
+msgstr "退出"
+
+#: window.py:401 window.py:405 window.py:406
+msgid "Hide"
+msgstr "隐藏"
+
+#: window.py:402 window.py:406 window.py:407
+msgid "Reload"
+msgstr "重载"
+
+#: window.py:414 window.py:435 window.py:418 window.py:439
+msgid "There are {} updates available"
+msgstr "当前有{}个软件包可以更新"
+
+#: upgrade_notify.py:29 upgrade_notify.py:30
+msgid "Software Updates Available"
+msgstr "存在可以更新的软件包"
+
+#: upgrade_notify.py:41
+msgid "Cancle"
+msgstr "取消"
+
+#: upgrade_notify.py:42
+msgid "Details"
+msgstr "详情"
+
+#: upgrade_notify.py:125
+#, python-brace-format
+msgid "There is {0} update available"
+msgid_plural "There are {0} updates available"
+msgstr[0] "有{0}个软件包可更新"
+msgstr[1] "有{0}个软件包可更新"
+
+#: window.py:229
+msgid "common"
+msgstr "普通更新"
+
+#: dnf.py:22 dnf.py:26
+msgid "bugfix"
+msgstr "问题修复"
+
+#: dnf.py:23 dnf.py:27
+msgid "security"
+msgstr "安全更新"
+
+#: dnf.py:24 dnf.py:28
+msgid "enhancement"
+msgstr "性能增强"
+
+#: upgrade_notify.py:29
+msgid "Software Updates Tool"
+msgstr "软件更新工具"
+
+#: window.py:385
+#, python-brace-format
+msgid "{0} update selected"
+msgid_plural "{0} updates selected"
+msgstr[0] "{0}个软件包更新被选中"
+msgstr[1] "{0}个软件包更新被选中"
+
+#: window.py:419 window.py:441
+msgid "There is {} update available"
+msgid_plural "There are {} updates available"
+msgstr[0] "当前有{}个软件包可以更新"
+msgstr[1] "当前有{}个软件包可以更新"
+
+#: window.py:125
+msgid "0 updates selected"
+msgstr "0个软件包更新被选中"
