@@ -2,7 +2,7 @@ import sys
 import logging
 from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, QPushButton, QLabel, QWidget, \
     QTableWidgetItem, QTableWidget, QDesktopWidget, QMainWindow, QAbstractItemView, QHBoxLayout, QStyle, \
-    QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox
+    QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox, QRadioButton
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal, QProcess, QTimer
 from utrepoinfo.config import LOGOPNG
@@ -64,8 +64,22 @@ class Ui_rpm_update(QMainWindow):
         # self.closebutton.clicked.connect(QApplication.instance().quit)
         self.closebutton.clicked.connect(self.close_event)
 
+        self.select_all = QPushButton(self)
+        self.select_all.setGeometry(QRect(10, 105, 120, 36))
+        self.select_all.setObjectName("select_all")
+        self.select_all.setProperty("name", 'select_btn')
+        self.select_security = QPushButton(self)
+        self.select_security.setGeometry(QRect(130, 105, 120, 36))
+        self.select_security.setObjectName("select_security")
+        self.select_security.setProperty("name", 'select_btn')
+        self.select_reset = QPushButton(self)
+        self.select_reset.setGeometry(QRect(250, 105, 120, 36))
+        self.select_reset.setObjectName("select_reset")
+        self.select_reset.setProperty("name", 'select_btn')
+
         self.rpm_table_widget = QTableWidget(self)
-        self.rpm_table_widget.setGeometry(QRect(10, 125, 620, 226))
+        # self.rpm_table_widget.setGeometry(QRect(10, 125, 620, 226))
+        self.rpm_table_widget.setGeometry(QRect(10, 140, 620, 211))
         self.rpm_table_widget.setObjectName("rpm_table_widget")
         self.rpm_table_widget.viewport().installEventFilter(self)
         self.set_rpm_table_widget_header()
@@ -152,13 +166,13 @@ class Ui_rpm_update(QMainWindow):
         # 四列数据
         self.rpm_table_widget.setColumnCount(4)
         # 设置头
-        header_checkbox = CheckBoxHeader()
-        self.rpm_table_widget.setHorizontalHeader(header_checkbox)
+        # header_checkbox = CheckBoxHeader()
+        # self.rpm_table_widget.setHorizontalHeader(header_checkbox)
         # self.rpm_table_widget.setHorizontalHeaderLabels(['Install', 'Software', 'Version', "Size"])
-        self.rpm_table_widget.setHorizontalHeaderLabels(['', 'Software', 'Version', "Size"])
+        self.rpm_table_widget.setHorizontalHeaderLabels(['Install', 'Software', 'Version', "Size"])
         # 设置表头显示方式
         self.rpm_table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        header_checkbox.select_all_clicked.connect(self.select_all_action)
+        # header_checkbox.select_all_clicked.connect(self.select_all_action)
 
         # 前三列固定宽度
         self.rpm_table_widget.setColumnWidth(0, 60)
@@ -354,6 +368,9 @@ class Ui_rpm_update(QMainWindow):
                                      "Software updates correct errors，eliminate security vulnerabilities and provide new features"))
         self.hidebutton.setToolTip(_translate("rpm_update", "hide"))
         self.closebutton.setToolTip(_translate("rpm_update", "close"))
+        self.select_all.setText(_translate("rpm_update", "Select All"))
+        self.select_security.setText(_translate("rpm_update", "Select security"))
+        self.select_reset.setText(_translate("rpm_update", "Reset select"))
 
     # 实现窗口拖动
     def mousePressEvent(self, event):
@@ -375,6 +392,7 @@ class Ui_rpm_update(QMainWindow):
         self.setCursor(QCursor(Qt.ArrowCursor))
 
 
+# 更新设计，暂时不使用自定义表头
 class CheckBoxHeader(QHeaderView):
     """自定义表头类"""
 
