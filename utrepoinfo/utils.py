@@ -1,10 +1,9 @@
-import signal
-import time
 import os
+import json
 from utrepoinfo.config import RECOARDFILE
 
 
-def delfile(filename):
+def del_file(filename):
     if os.path.exists(filename):
         try:
             os.remove(filename)
@@ -12,8 +11,18 @@ def delfile(filename):
             pass
 
 
+def write_file(file, content):
+    with open(file, "w") as f:
+        f.write(content)
+
+
+def write_pyobj_file(file, obj):
+    with open(file, 'w') as f:
+        json.dump(obj, f, indent=4)
+
+
 def sigterm_handler(sig, frame):
-    delfile(RECOARDFILE)
+    del_file(RECOARDFILE)
     exit()
 
 

@@ -13,12 +13,16 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://gitlabxa.uniontech.com/server/incubator/UnionTech-repoinfo",
     packages=setuptools.find_packages(),
-    install_requires=[
-        "PyQt5",
-    ],
+    # install_requires=[
+    #     "PyQt5",
+    # ],
+    include_package_data=True,
     entry_points={
+        # reponotify 通知命令
         'console_scripts': ['reponotify=utrepoinfo.reponotify:main',
+                            # utrpminstall 安装命令
                             'utrpminstall=utrepoinfo.dnf:install',
+                            # repoinfo 查询命令
                             'repoinfo=utrepoinfo.repoinfo:main'],
     },
     classifiers=[
