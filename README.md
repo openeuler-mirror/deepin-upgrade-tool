@@ -16,7 +16,7 @@ window, you can open the Software Updater and select the software to update
 - logrotate
 - python3-PyQt5-base
 - python3dist(psutil)
-- dde
+- dde-control-center
 
 ## Installation
 
@@ -29,9 +29,9 @@ $ rpmbuild com.deepin.update.spec
 ### Install
 
 ```
-rpm -ivh com.deepin.update-XXX-rpm
+rpm -ivh com.deepin.upgrade-XXX-rpm
 # or
-dnf install com.deepin.update-XXX-rpm
+dnf install com.deepin.upgrade-XXX-rpm
 ```
 
 ## Getting help

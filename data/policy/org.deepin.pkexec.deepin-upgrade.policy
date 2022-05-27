@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Deepin</vendor>
+  <vendor_url>https://www.deepin.com</vendor_url>
+  <!-- 权限ID，这个必须唯一 -->
+  <action id="com.deepin.pkexec.deepin-upgrade">
+    <!-- 图标 这个我不知道存在哪里，再研究研究-->
+    <!--<icon_name>/var/lib/pkgs_upgrade/icon/window_notify.png</icon_name>-->
+    <!-- 弹窗提示 -->
+    <message>Authentication is required to upgrade packages</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+      <!-- 这个defaults节点下的所有子节点可以有这些值no,yes,auth_self,auth_admin,auth_self_keep,auth_admin_keep　-->
+    </defaults>
+    <!-- 语言为简体中文时的弹窗提示 -->
+    <message xml:lang="zh_CN">软件包升级需要进行认证</message>
+    <!-- 权限提升的可执行文件，需是二进制文件 -->
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/bin/pkgs_install_tool</annotate>
+    <!-- 这行听说是是否允许GUI，但是测试的时候好像不起作用 -->
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+</policyconfig>

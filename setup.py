@@ -2,11 +2,13 @@ import setuptools
 import glob
 import os
 from com_deepin_upgrade.config import HOME_DIR
+
 logrotate_path = "/etc/logrotate.d"
 desktop_path = "/usr/share/applications"
 system_path = "/usr/lib/systemd"
 home_dir = HOME_DIR
 bin_dir = "/usr/bin"
+policy_dir = "/usr/share/polkit-1/actions"
 autostart_path = ".config/autostart/"
 autostart_all = "/etc/skel/{}".format(autostart_path)
 autostart_root = "/root/{}".format(autostart_path)
@@ -64,6 +66,7 @@ setuptools.setup(
         (f"{system_path}/system", ["data/service/pkgs-upgrade-info.service", "data/service/pkgs-upgrade-info.timer"]),
         (f"{home_dir}/icon", glob.glob("data/icon/*")),
         (f"{home_dir}/pixmaps", glob.glob("data/pixmaps/*")),
+        (policy_dir, ["data/policy/org.deepin.pkexec.deepin-upgrade.policy"]),
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
