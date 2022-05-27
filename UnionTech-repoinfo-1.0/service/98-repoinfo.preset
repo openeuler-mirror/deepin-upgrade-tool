@@ -1,1 +1,1 @@
-enable repoinfo.service
+enable repoinfo.timer

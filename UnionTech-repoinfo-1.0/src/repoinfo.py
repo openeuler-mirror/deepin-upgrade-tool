@@ -66,10 +66,8 @@ def createlogfile():
 def main():
     logging.info("Main fun start")
     atexit.register(delfile,filename = LOGFILE)
-    while True:
-        createlogfile()
-        time.sleep(60)
-#        logging.info("Main fun end")
+    createlogfile()
+    logging.info("Main fun end")
 
 if __name__ == '__main__':
     main()
