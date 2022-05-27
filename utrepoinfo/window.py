@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObje
 from utrepoinfo.config import LOGOPNG
 from utrepoinfo.utils import get_available_update_rpmpkgs
 from utrepoinfo.qss import qss_style
+from utrepoinfo.dnf import RpmType
 
 
 class Ui_rpm_update(QMainWindow):
@@ -65,11 +66,13 @@ class Ui_rpm_update(QMainWindow):
         self.closebutton.clicked.connect(self.close_event)
 
         self.select_all = QCheckBox(self)
-        self.select_all.setGeometry(QRect(30, 110, 99, 26))
+        self.select_all.setGeometry(QRect(34, 110, 99, 26))
         self.select_all.setObjectName("select_all")
+        self.select_all.clicked.connect(self.select_all_action)
         self.select_security = QCheckBox(self)
         self.select_security.setGeometry(QRect(150, 110, 141, 26))
         self.select_security.setObjectName("select_security")
+        self.select_security.clicked.connect(self.select_security_action)
 
         self.rpm_table_widget = QTableWidget(self)
         # self.rpm_table_widget.setGeometry(QRect(10, 125, 620, 226))
@@ -172,18 +175,25 @@ class Ui_rpm_update(QMainWindow):
         self.rpm_table_widget.setColumnWidth(0, 60)
         self.rpm_table_widget.setColumnWidth(1, 236)
         self.rpm_table_widget.setColumnWidth(2, 165)
-        self.rpm_table_widget.setColumnWidth(3, 60)
+        self.rpm_table_widget.setColumnWidth(3, 80)
         # 最后一列自适应宽度
         self.rpm_table_widget.horizontalHeader().setSectionResizeMode(4, QHeaderView.Stretch)
 
     def init_rpm_info(self):
-        self.check_status = []
+        def convert_type_to_str(type_list):
+            if len(type_list) == 0:
+                return "common"
+            else:
+                return ",".join(type_list)
+
+        self.rpmpkgs_select_status = []
         self.clean_rpm_info()
         for i in self.rpmpkgs:
+            rpmpkg_type = convert_type_to_str(i["type"])
             ck = self.add_rpm_item("{name}({arch})".format(name=i["name"], arch=i["arch"]),
                                    "{version}-{release}".format(version=i["version"], release=i["release"]),
-                                   i["type"], i["downloadsize_human_readable"])
-            self.check_status.append([ck, i["name"]])
+                                   rpmpkg_type, i["downloadsize_human_readable"])
+            self.rpmpkgs_select_status.append([ck, i["name"], rpmpkg_type])
 
     def clean_rpm_info(self):
         self.rpm_table_widget.clearContents()
@@ -191,14 +201,36 @@ class Ui_rpm_update(QMainWindow):
 
     def select_all_action(self, event):
         if event:
-            # 将所有checkbox设置未是
-            for i in self.check_status:
+            # 设置安全更新为否
+            self.select_security.setCheckState(Qt.Unchecked)
+            # 将所有checkbox设置为是
+            for i in self.rpmpkgs_select_status:
                 # 只修改可编辑按钮的状态
                 if i[0].isEnabled():
                     i[0].setCheckState(Qt.Checked)
         else:
             # 将所有的checkbox 设置否
-            for i in self.check_status:
+            for i in self.rpmpkgs_select_status:
+                # 只修改可编辑按钮的状态
+                if i[0].isEnabled():
+                    i[0].setCheckState(Qt.Unchecked)
+
+    def select_security_action(self, event):
+        if event:
+            # 设置选择全部为否
+            self.select_all.setCheckState(Qt.Unchecked)
+            # 将所有checkbox设置为是
+            for i in self.rpmpkgs_select_status:
+                # 只修改可编辑按钮的状态
+                if i[0].isEnabled():
+                    if RpmType.sec in i[2]:
+                        i[0].setCheckState(Qt.Checked)
+                    else:
+                        i[0].setCheckState(Qt.Unchecked)
+
+        else:
+            # 将所有的checkbox 设置否
+            for i in self.rpmpkgs_select_status:
                 # 只修改可编辑按钮的状态
                 if i[0].isEnabled():
                     i[0].setCheckState(Qt.Unchecked)
@@ -227,9 +259,9 @@ class Ui_rpm_update(QMainWindow):
         self.rpm_status.setText("Start upgrade...")
         select_rpm_list = []
         for i in range(self.rpm_table_widget.rowCount()):
-            if self.check_status[i][0].isChecked():
-                select_rpm_list.append(self.check_status[i][1])
-                self.check_status[i][0].setDisabled(True)
+            if self.rpmpkgs_select_status[i][0].isChecked():
+                select_rpm_list.append(self.rpmpkgs_select_status[i][1])
+                self.rpmpkgs_select_status[i][0].setDisabled(True)
         self.output_console.clear()
         # self.process.start("ping", ["baidu.com", "-c", "4"])
         self.process.start("pkexec", ["utrpminstall", "-l", " ".join(select_rpm_list)])
@@ -281,7 +313,7 @@ class Ui_rpm_update(QMainWindow):
         # return
         select_count = 0
         for i in range(self.rpm_table_widget.rowCount()):
-            if self.check_status[i][0].isChecked():
+            if self.rpmpkgs_select_status[i][0].isChecked():
                 select_count += 1
 
         self.rpm_status.setText("{0} updates selected".format(str(select_count)))
