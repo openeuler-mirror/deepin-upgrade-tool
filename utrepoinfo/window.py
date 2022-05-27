@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication, QCheckBox, QTextBrowser, QHeaderView, 
     QStyleOptionButton, QSystemTrayIcon, QMenu, QAction, QMessageBox
 from PyQt5.QtGui import QFont, QPixmap, QCursor, QIcon
 from PyQt5.QtCore import Qt, QRect, QMetaObject, QCoreApplication, QEvent, QObject, pyqtSignal, QProcess, QTimer
-from utrepoinfo.config import RPMPKGSDETAILS, RECOARDDIR
+from utrepoinfo.config import RPMPKGSDETAILS, LOGOPNG
 from utrepoinfo.utils import read_jsonfile_to_pyobj
 
 qssStyle = '''
@@ -142,7 +142,7 @@ class Ui_rpm_update(QMainWindow):
         self.logo = QLabel(self)
         self.logo.setGeometry(15, 25, 80, 76)
         self.logo.setObjectName("logo")
-        logo_pic = QPixmap('/home/weidong/Desktop/repo/rpmupdate/img/notify.png')
+        logo_pic = QPixmap(LOGOPNG)
         self.logo.setPixmap(logo_pic.scaled(80, 76))
 
         self.title = QLabel(self)
@@ -318,8 +318,8 @@ class Ui_rpm_update(QMainWindow):
                 select_rpm_list.append(self.check_status[i][1])
                 self.check_status[i][0].setDisabled(True)
         self.output_console.clear()
-        self.process.start("ping", ["baidu.com", "-c", "4"])
-        # self.process.start("pkexec", ["utrpminstall"," ".join(select_rpm_list)])
+        # self.process.start("ping", ["baidu.com", "-c", "4"])
+        self.process.start("pkexec", ["utrpminstall"," ".join(select_rpm_list)])
 
     def eventFilter(self, source, event):
         if self.rpm_table_widget.selectedIndexes() != []:
@@ -382,7 +382,7 @@ class Ui_rpm_update(QMainWindow):
     def repo_tray(self):
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(
-            QIcon("/home/weidong/Desktop/repo/UnionTech-repoinfo/UnionTech-repoinfo-1.0/img/notify.png"))
+            QIcon(LOGOPNG))
 
         '''
             Define and add steps to work with the system tray icon
