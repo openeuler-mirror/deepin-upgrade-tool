@@ -18,6 +18,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': ['reponotify=utrepoinfo.reponotify:main',
+                            'utrpminstall=utrepoinfo.dnf:install',
                             'repoinfo=utrepoinfo.repoinfo:main'],
     },
     classifiers=[
