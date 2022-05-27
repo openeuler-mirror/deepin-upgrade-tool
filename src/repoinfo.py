@@ -1,16 +1,15 @@
 #!/usr/bin/python3
 
-import time
 import os
-import atexit
 import subprocess
 import re
-#from threading import Timer
 import logging
 import signal
 
 LOGFILE = "/var/log/repoinfomation.log"
-RECOARDFILE = "/var/infomation/msg.txt"
+RECOARDDIR = "/var/infomation"
+RECOARDFILE = "msg.txt"
+
 
 def handler(sig, frame):
     delfile(RECOARDFILE)
@@ -20,16 +19,11 @@ logging.basicConfig(filename = LOGFILE,level = logging.DEBUG)
 signal.signal(signal.SIGTERM, handler)
 
 def myrecoard(content):
-    try:
-        os.stat("/var/infomation/")
-    except:
+    if not os.path.exists(RECOARDDIR):
         os.mkdir("/var/infomation/")
 
-    with open(RECOARDFILE, "w+") as f:
-        read_data = f.read()
-        f.truncate()   #清空文件
+    with open(RECOARDFILE, "w") as f:
         f.write(content)
-        f.close()
 def delfile(filename):
     if os.path.exists(filename):
         try:
@@ -50,12 +44,12 @@ def createlogfile():
         proc.kill()
         logging.info('Exec command timeout')
         myrecoard("")
-        return 
+        return
 
     if proc.returncode == 1:
         logging.info('Connect repo server error')
         myrecoard("")
-        return 
+        return
     for line in outs.decode("utf-8").splitlines():
         if re.search("uel20", line):
             num += 1
@@ -66,7 +60,6 @@ def createlogfile():
 
 def main():
     logging.info("Main fun start")
-#    atexit.register(delfile,filename = LOGFILE)
     createlogfile()
     logging.info("Main fun end")
 
