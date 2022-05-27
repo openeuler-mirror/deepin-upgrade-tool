@@ -5,6 +5,7 @@ import datetime
 from utrepoinfo.config import REPO_CLI_MSG, REPO_DATA
 from utrepoinfo.rpm import get_local_rpmpkgs
 
+
 class ComplexEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
@@ -13,6 +14,7 @@ class ComplexEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d')
         else:
             return json.JSONEncoder.default(self, obj)
+
 
 def del_file(filename):
     if os.path.exists(filename):
@@ -58,6 +60,10 @@ def get_available_update_rpmpkgs():
         logging.error("Can't get rpmpkgs")
         logging.error(e)
     return rpmpkgs
+
+
+def get_available_update_rpmpkgs_number():
+    return len(get_available_update_rpmpkgs())
 
 
 if __name__ == '__main__':
