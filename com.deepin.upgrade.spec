@@ -6,7 +6,7 @@ Summary:        Deepin upgrade tool
 License:        GPL-3.0-only
 Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
-BuildRequires:  python3-devel python3dist(setuptools) desktop-file-utils gettext
+BuildRequires:  python3-devel python3dist(setuptools) desktop-file-utils gettext systemd
 Requires:       python3 logrotate python3-PyQt5-base python3dist(psutil) dde-control-center
 %{?systemd_requires}
 Provides:       UnionTech-repoinfo
@@ -41,7 +41,6 @@ systemctl start pkgs-upgrade-info.timer >/dev/null 2>&1 || :
 %postun
 %systemd_postun_with_restart pkgs-upgrade-info.timer
 
-%files
 
 %files -f %{name}.lang
 %{_sysconfdir}/logrotate.d/%{pypi_name}
