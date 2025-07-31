@@ -91,7 +91,97 @@ class UtBase(dnf.Base):
         # 获取可更新的软件包
         logging.debug("get update pkg's list")
         self.available_update_pkgs = self.query.available().upgrades()
+        
+        # 记录原始包数量
+        original_count = len(self.available_update_pkgs)
+        logging.debug(f"Found {original_count} packages before deduplication")
+        
+        # 去重处理：对于同一个软件包只保留最新版本
+        pkgs_dict = {}
+        duplicates_removed = 0
+        
+        for pkg in self.available_update_pkgs:
+            # 使用包名和架构作为唯一标识
+            pkg_key = f"{pkg.name}.{pkg.arch}"
+            
+            if pkg_key not in pkgs_dict:
+                # 第一次遇到这个包，直接添加
+                pkgs_dict[pkg_key] = pkg
+                logging.debug(f"Added package: {pkg.name}-{pkg.version}-{pkg.release}.{pkg.arch} from {pkg.reponame}")
+            else:
+                # 已经存在，比较版本号，保留较新的版本
+                existing_pkg = pkgs_dict[pkg_key]
+                comparison_result = self._compare_package_versions(pkg, existing_pkg)
+                
+                if comparison_result > 0:
+                    # 当前包更新，替换现有包
+                    logging.debug(f"Replaced {existing_pkg.name}-{existing_pkg.version}-{existing_pkg.release}.{existing_pkg.arch} "
+                                f"with {pkg.name}-{pkg.version}-{pkg.release}.{pkg.arch} (newer version)")
+                    pkgs_dict[pkg_key] = pkg
+                    duplicates_removed += 1
+                elif comparison_result < 0:
+                    # 现有包更新，保持现有包
+                    logging.debug(f"Kept {existing_pkg.name}-{existing_pkg.version}-{existing_pkg.release}.{existing_pkg.arch} "
+                                f"over {pkg.name}-{pkg.version}-{pkg.release}.{pkg.arch} (older version)")
+                    duplicates_removed += 1
+                else:
+                    # 版本相同，记录但保持现有包
+                    logging.debug(f"Found duplicate with same version: {pkg.name}-{pkg.version}-{pkg.release}.{pkg.arch} "
+                                f"from {pkg.reponame} vs {existing_pkg.reponame}")
+                    duplicates_removed += 1
+        
+        # 返回去重后的包列表
+        self.available_update_pkgs = list(pkgs_dict.values())
+        final_count = len(self.available_update_pkgs)
+        
+        logging.info(f"Package deduplication completed: {original_count} -> {final_count} packages "
+                    f"({duplicates_removed} duplicates removed)")
+        
         return self.available_update_pkgs
+    
+    def _get_package_version_string(self, pkg):
+        """
+        获取包的完整版本字符串，用于比较和日志记录
+        """
+        try:
+            if hasattr(pkg, 'epoch') and pkg.epoch:
+                return f"{pkg.epoch}:{pkg.version}-{pkg.release}"
+            else:
+                return f"{pkg.version}-{pkg.release}"
+        except Exception as e:
+            logging.warning(f"Failed to get version string for {pkg.name}: {e}")
+            return f"{pkg.version}-{pkg.release}"
+
+    def _compare_package_versions(self, pkg1, pkg2):
+        """
+        比较两个包的版本号
+        返回值：1表示pkg1更新，-1表示pkg2更新，0表示版本相同
+        """
+        try:
+            # 使用dnf的版本比较功能（最可靠的方法）
+            if pkg1.evr > pkg2.evr:
+                return 1
+            elif pkg1.evr < pkg2.evr:
+                return -1
+            else:
+                return 0
+        except Exception as e:
+            logging.warning(f"dnf version comparison failed for {pkg1.name} and {pkg2.name}: {e}")
+            # 如果dnf版本比较失败，使用字符串比较作为备选方案
+            try:
+                pkg1_ver = self._get_package_version_string(pkg1)
+                pkg2_ver = self._get_package_version_string(pkg2)
+                
+                if pkg1_ver > pkg2_ver:
+                    return 1
+                elif pkg1_ver < pkg2_ver:
+                    return -1
+                else:
+                    return 0
+            except Exception as e2:
+                logging.error(f"String version comparison also failed: {e2}")
+                # 如果都失败了，保持原有顺序
+                return 0
 
     def get_latest_changelogs(self, package):
         """Return list of changelogs for package newer then installed version"""

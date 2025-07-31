@@ -1,7 +1,7 @@
 %global         pypi_name  com_deepin_upgrade
 Name:           com.deepin.upgrade
-Version:        1.1
-Release:        5
+Version:        1.2
+Release:        1
 Summary:        Deepin upgrade tool
 License:        GPL-3.0-only
 Source0:        %{name}-%{version}.tar.gz
@@ -62,6 +62,9 @@ systemctl start pkgs-upgrade-info.timer >/dev/null 2>&1 || :
 
 
 %changelog
+* Thu Jul 31 2025 zhouyuanyuan <2535682878@qq.com> - 1.2-1
+- Update 1.2
+
 * Wed Jan 05 2022 weidong <weidong@uniontech.com> - 1.1-5
 - Delete reminder desktop
 - Optimize DBUS judgment
