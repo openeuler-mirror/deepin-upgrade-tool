@@ -84,7 +84,7 @@ class UtBase(dnf.Base):
             # 查询源信息
             self.query = self.sack.query()
         except Exception as e:
-            logging.warning("connetct repo error")
+            logging.warning("connect repo error")
             logging.warning(e)
 
     def get_available_update_pkgs(self):
